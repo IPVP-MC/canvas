@@ -13,6 +13,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * An unmodifiable view of an Inventory. This view effectively provides
+ * users with "read-only" access to the internal Inventory. Operations
+ * which query for specific ItemStacks will return deep copies where 
+ * modification of the returned Object will have no effect on the backing
+ * Inventory.
+ */
 public class ImmutableInventory implements Inventory {
 
     private Inventory inventory;
@@ -208,7 +215,11 @@ public class ImmutableInventory implements Inventory {
     public ListIterator<ItemStack> iterator(int i) {
         return new ImmutableWrappedCloningListIterator(inventory.iterator(i));
     }
-    
+
+    /**
+     * A "read-only" ItemStack iterator for ImmutableInventory instances that enforces the
+     * requirements of ImmutableInventory.
+     */
     private class ImmutableWrappedCloningListIterator implements ListIterator<ItemStack> {
 
         private ListIterator<ItemStack> handle;

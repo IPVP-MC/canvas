@@ -13,13 +13,17 @@ import org.ipvp.canvas.ImmutableInventory;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.button.Button;
 
+/**
+ * An abstract class that provides a skeletal implementation of the Menu 
+ * interface.
+ */
 public abstract class AbstractMenu implements Menu  {
 
     private final Inventory inventory;
     private Menu parent;
     private Map<Integer, Button> buttons = new HashMap<>();
 
-    AbstractMenu(String title, int slots, Menu parent) {
+    protected AbstractMenu(String title, int slots, Menu parent) {
         if (title == null) {
             title = InventoryType.CHEST.getDefaultTitle();
         }
@@ -27,7 +31,7 @@ public abstract class AbstractMenu implements Menu  {
         this.parent = parent;
     }
     
-    AbstractMenu(String title, InventoryType type, Menu parent) {
+    protected AbstractMenu(String title, InventoryType type, Menu parent) {
         Objects.requireNonNull(type, "type cannot be null");
         if (title == null) {
             title = type.getDefaultTitle();
@@ -43,10 +47,6 @@ public abstract class AbstractMenu implements Menu  {
 
     @Override
     public void open(Player viewer) {
-        Inventory inv = getInventory();
-        if (inv.getViewers().contains(viewer)) {
-            throw new IllegalStateException("menu already open for player");
-        }
         viewer.openInventory(getInventory());
     }
 
@@ -65,21 +65,12 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
-    public void addButton(int index, Button button) {
+    public void setButton(int index, Button button) {
         if (buttons.containsKey(index)) {
-            removeButton(index);
+            clear(index);
         }
         buttons.put(index, button);
         inventory.setItem(index, button.getIcon());
-    }
-
-    @Override
-    public Optional<Button> removeButton(int index) {
-        Button removed = buttons.remove(index);
-        if (removed != null) {
-            inventory.setItem(index, null);
-        }
-        return Optional.ofNullable(removed);
     }
 
     @Override
@@ -88,8 +79,11 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
-    public void clear(int slot) {
-        buttons.remove(slot);
+    public void clear(int index) {
+        Button removed = buttons.remove(index);
+        if (removed != null) {
+            inventory.setItem(index, null);
+        }
     }
 
     @Override
@@ -97,22 +91,16 @@ public abstract class AbstractMenu implements Menu  {
         return new ImmutableInventory(inventory);
     }
 
-    static abstract class Builder implements Menu.Builder {
+    /**
+     * Abstract base class for builders of {@link Menu} types.
+     * <p>
+     * Builder instances are reusable; calling {@link #build()} will
+     * generate a new Menu with identical features to the ones created before it.
+     */
+    public static abstract class Builder implements Menu.Builder {
         
         private String title;
         private Menu parent;
-        
-        /*@Override
-        public Menu.Builder size(int size) {
-            this.size = size;
-            return this;
-        }
-
-        @Override
-        public Menu.Builder type(InventoryType type) {
-            this.type = type;
-            return this;
-        }*/
 
         @Override
         public Menu.Builder title(String title) {
@@ -125,14 +113,6 @@ public abstract class AbstractMenu implements Menu  {
             this.parent = parent;
             return this;
         }
-        
-        /*public int getSize() {
-            return size;
-        }
-
-        public InventoryType getType() {
-            return type;
-        }*/
 
         public String getTitle() {
             return title;

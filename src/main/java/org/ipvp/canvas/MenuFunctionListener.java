@@ -11,7 +11,13 @@ import org.bukkit.inventory.Inventory;
 import org.ipvp.canvas.button.Button;
 import org.ipvp.canvas.button.ClickableButton;
 
-public final class MenuClickListener implements Listener {
+/**
+ * A listener that maintains the required functions of Menus.
+ * <p>
+ * Effectively handles all required events and passes through necessary data
+ * to Menu instances that are being interacted with by players.
+ */
+public final class MenuFunctionListener implements Listener {
 
     @EventHandler
     public void handleGuiClick(InventoryClickEvent event) {

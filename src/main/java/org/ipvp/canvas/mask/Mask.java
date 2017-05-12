@@ -10,7 +10,9 @@ public interface Mask extends Iterable<Integer> {
         
         int currentLine();
         
-        int maxLines();
+        int rows();
+        
+        int columns();
 
         Builder nextLine();
 

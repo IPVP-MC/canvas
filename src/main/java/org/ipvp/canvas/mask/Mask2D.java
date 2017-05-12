@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.ipvp.canvas.Menu;
+
+/**
+ * 
+ */
 public class Mask2D implements Mask {
 
     private List<Integer> mask;
 
-    private Mask2D(List<Integer> mask) {
+    Mask2D(List<Integer> mask) {
         this.mask = mask;
     }
 
@@ -31,23 +36,42 @@ public class Mask2D implements Mask {
         return mask.iterator();
     }
 
-    public static Builder builder() {
-        return builder(1);
+    /**
+     * Returns a new builder that matches the dimensions of a Menu
+     * 
+     * @param menu The menu to build a mask for
+     * @return A mask builder conforming to the dimensions of the Menu
+     */
+    public static Builder builder(Menu menu) {
+        Menu.Dimension dimension = menu.getDimensions();
+        return new Builder(dimension.getRows(), dimension.getColumns());
     }
 
-    public static Builder builder(int lines) {
-        return new Builder(lines);
+    /**
+     * Returns a new builder for specific dimensions
+     * 
+     * @param rows The amount of rows to cover
+     * @param cols The amount of columns to cover
+     * @return A mask builder for the specified number of rows and columns
+     */
+    public static Builder builder(int rows, int cols) {
+        return new Builder(rows, cols);
     }
 
-    private static class Builder implements Mask.Builder {
+    /**
+     * A builder to create a Mask2D
+     */
+    public static class Builder implements Mask.Builder {
 
         private int currentLine;
-        private int lines;
+        private int rows;
+        private int cols;
         private int[][] mask;
         
-        public Builder(int lines) {
-            this.lines = lines;
-            this.mask = new int[lines][9];            
+        public Builder(int rows, int cols) {
+            this.rows = rows;
+            this.cols = cols;
+            this.mask = new int[rows][cols];            
         }
         
         @Override
@@ -56,8 +80,13 @@ public class Mask2D implements Mask {
         }
 
         @Override
-        public int maxLines() {
-            return lines;
+        public int rows() {
+            return rows;
+        }
+        
+        @Override
+        public int columns() {
+            return cols;
         }
 
         @Override
