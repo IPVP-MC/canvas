@@ -17,7 +17,7 @@ public class DefaultSlot implements Slot {
     private ClickHandler handler;
     
     public DefaultSlot(Inventory handle, int index) {
-        this(handle, index, ClickOptions.ALLOW_ALL);
+        this(handle, index, ClickOptions.DENY_ALL);
     }
 
     public DefaultSlot(Inventory handle, int index, ClickOptions options) {
