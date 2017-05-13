@@ -1,4 +1,4 @@
-package org.ipvp.canvas.button;
+package org.ipvp.canvas.slot;
 
 import java.util.EnumSet;
 import java.util.function.Predicate;

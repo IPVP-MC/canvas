@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
-import org.ipvp.canvas.button.Button;
+import org.ipvp.canvas.slot.Slot;
 
 /**
  * A menu represents an interactive interface for Players backed by instances of 
@@ -38,20 +38,12 @@ public interface Menu extends InventoryHolder {
     void close(Player viewer);
 
     /**
-     * Returns the Button found at the given index of the Menu
+     * Returns the Slot found at the given index of the Menu
      *
-     * @param index The index of the Button
-     * @return The Button at the index
+     * @param index The index of the Slot
+     * @return The Slot at the index
      */
-    Optional<Button> getButton(int index);
-
-    /**
-     * Stores the Button at the given index of the Menu
-     *
-     * @param index  The index number where to put the Button
-     * @param button The Button to set
-     */
-    void setButton(int index, Button button);
+    Slot getSlot(int index);
 
     /**
      * Clears out the whole Menu

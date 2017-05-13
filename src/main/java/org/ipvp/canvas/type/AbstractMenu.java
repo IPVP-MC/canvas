@@ -1,7 +1,5 @@
 package org.ipvp.canvas.type;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -11,7 +9,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.ipvp.canvas.ImmutableInventory;
 import org.ipvp.canvas.Menu;
-import org.ipvp.canvas.button.Button;
+import org.ipvp.canvas.slot.DefaultSlot;
+import org.ipvp.canvas.slot.Slot;
 
 /**
  * An abstract class that provides a skeletal implementation of the Menu 
@@ -21,7 +20,7 @@ public abstract class AbstractMenu implements Menu  {
 
     private final Inventory inventory;
     private Menu parent;
-    private Map<Integer, Button> buttons = new HashMap<>();
+    private Slot[] slots;
 
     protected AbstractMenu(String title, int slots, Menu parent) {
         if (title == null) {
@@ -29,6 +28,7 @@ public abstract class AbstractMenu implements Menu  {
         }
         this.inventory = Bukkit.createInventory(this, slots, title);
         this.parent = parent;
+        generateSlots();
     }
     
     protected AbstractMenu(String title, InventoryType type, Menu parent) {
@@ -38,6 +38,17 @@ public abstract class AbstractMenu implements Menu  {
         }
         this.inventory = Bukkit.createInventory(this, type, title);
         this.parent = parent;
+        generateSlots();
+    }
+
+    /**
+     * Initial method called to fill the Slots of the menu
+     */
+    protected void generateSlots() {
+        this.slots = new Slot[inventory.getSize()];
+        for (int i = 0 ; i < slots.length ; i++) {
+            slots[i] = new DefaultSlot(inventory, i);
+        }
     }
 
     @Override
@@ -60,30 +71,21 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
-    public Optional<Button> getButton(int index) {
-        return Optional.ofNullable(buttons.get(index));
-    }
-
-    @Override
-    public void setButton(int index, Button button) {
-        if (buttons.containsKey(index)) {
-            clear(index);
-        }
-        buttons.put(index, button);
-        inventory.setItem(index, button.getIcon());
+    public Slot getSlot(int index) {
+        return slots[index];
     }
 
     @Override
     public void clear() {
-        buttons.clear();
+        for (Slot slot : slots) {
+            slot.setItem(null);
+        }
     }
 
     @Override
     public void clear(int index) {
-        Button removed = buttons.remove(index);
-        if (removed != null) {
-            inventory.setItem(index, null);
-        }
+        Slot slot = getSlot(index);
+        slot.setItem(null);
     }
 
     @Override

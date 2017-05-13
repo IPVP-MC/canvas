@@ -1,15 +1,12 @@
 package org.ipvp.canvas;
 
-import java.util.Optional;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.ipvp.canvas.button.Button;
-import org.ipvp.canvas.button.ClickableButton;
+import org.ipvp.canvas.slot.Slot;
 
 /**
  * A listener that maintains the required functions of Menus.
@@ -25,17 +22,21 @@ public final class MenuFunctionListener implements Listener {
 
         if (clicked.getHolder() instanceof Menu) {
             Menu menu = (Menu) clicked.getHolder();
-            Optional<Button> obutton = menu.getButton(event.getSlot());
+            Slot slot = menu.getSlot(event.getSlot()); // TODO: Clicking outside etc
+            ClickInformation clickInformation = new ClickInformation(menu, slot, event.getAction(), event.getClick());
 
-            if (obutton.isPresent() && obutton.get() instanceof ClickableButton) {
-                ClickableButton button = (ClickableButton) obutton.get();
-                ClickInformation clickInformation = new ClickInformation(menu, event.getAction(), event.getClick());
-                
-                if (button.options().test(clickInformation)) {
-                    button.click((Player) event.getWhoClicked(), clickInformation);
-                    event.setResult(Event.Result.DENY);
-                }
+            Event.Result result = Event.Result.DEFAULT;
+            if (!slot.getClickOptions().test(clickInformation)) {
+                result = Event.Result.DENY;
             }
+            
+            clickInformation.setResult(result);
+            
+            if (slot.getClickHandler().isPresent()) {
+                slot.getClickHandler().get().click((Player) event.getWhoClicked(), clickInformation);
+            }
+            
+            event.setResult(clickInformation.getResult());
         }
     }
 }
