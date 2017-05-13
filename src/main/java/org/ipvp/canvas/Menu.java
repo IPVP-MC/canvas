@@ -64,9 +64,6 @@ public interface Menu extends InventoryHolder {
      */
     Dimension getDimensions();
 
-    @Override
-    ImmutableInventory getInventory();
-
     /**
      * A Builder for Menus
      */

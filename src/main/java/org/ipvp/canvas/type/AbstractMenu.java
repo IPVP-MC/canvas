@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.ipvp.canvas.ImmutableInventory;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.slot.DefaultSlot;
 import org.ipvp.canvas.slot.Slot;
@@ -89,8 +88,8 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
-    public ImmutableInventory getInventory() {
-        return new ImmutableInventory(inventory);
+    public Inventory getInventory() {
+        return inventory;
     }
 
     /**
