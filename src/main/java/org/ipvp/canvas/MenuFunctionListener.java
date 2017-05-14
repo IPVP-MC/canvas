@@ -19,7 +19,6 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.slot.ClickOptions;
 import org.ipvp.canvas.slot.Slot;
-import org.ipvp.canvas.type.BoxMenu;
 
 /**
  * A listener that maintains the required functions of Menus.

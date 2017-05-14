@@ -1,11 +1,9 @@
 package org.ipvp.canvas.slot;
 
 import java.util.EnumSet;
-import java.util.function.Predicate;
 
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
-import org.ipvp.canvas.ClickInformation;
 
 /**
  * Restrictions for when the execution of a Button will pass
