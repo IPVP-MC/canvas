@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -230,13 +231,25 @@ public final class MenuFunctionListener implements Listener {
     public void preventShiftClickInCustomTiles(InventoryClickEvent event) {
         Inventory top = event.getView().getTopInventory();
         
-        // If the player is shift clicking an item into a box menu we disallow it
-        // because certain custom inventories shoot off a StackOverflowError when 
-        // this event is allowed to process.
-        if (top.getHolder() instanceof BoxMenu
-                && top != event.getClickedInventory()
+        // If the player is shift clicking an item into a disallowed inventory type 
+        // we disallow it because certain custom inventories shoot off a 
+        // StackOverflowError when this event is allowed to process.
+        if (top.getHolder() instanceof Menu && isShiftClickingBlocked(top.getType())
                 && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
             event.setCancelled(true);
+        }
+    }
+    
+    // Returns true if shift clicking into a specific inventory type is allowed
+    private boolean isShiftClickingBlocked(InventoryType type) {
+        switch (type) {
+            case HOPPER:
+            case WORKBENCH:
+            case DROPPER:
+            case DISPENSER:
+                return true;
+            default:
+                return false;
         }
     }
 }
