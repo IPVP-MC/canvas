@@ -6,6 +6,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.ipvp.canvas.slot.Slot;
 
 /**
@@ -13,13 +15,20 @@ import org.ipvp.canvas.slot.Slot;
  */
 public class ClickInformation {
     
-    private final InventoryClickEvent handle;
+    private final InventoryInteractEvent handle;
+    private final InventoryAction inventoryAction;
+    private final ClickType clickType;
+    private final Inventory clicked;
     private final Menu clickedMenu;
     private final Slot clickedSlot;
     private Event.Result result;
-    
-    ClickInformation(InventoryClickEvent handle, Menu clickedMenu, Slot clickedSlot, Event.Result result) {
+
+    ClickInformation(InventoryInteractEvent handle, InventoryAction inventoryAction, ClickType clickType,
+                     Inventory clicked, Menu clickedMenu, Slot clickedSlot, Event.Result result) {
         this.handle = handle;
+        this.inventoryAction = inventoryAction;
+        this.clickType = clickType;
+        this.clicked = clicked;
         this.clickedMenu = clickedMenu;
         this.clickedSlot = clickedSlot;
         this.result = result;
@@ -49,7 +58,7 @@ public class ClickInformation {
      * @return The action of a player
      */
     public InventoryAction getAction() {
-        return handle.getAction();
+        return inventoryAction;
     }
 
     /**
@@ -58,7 +67,7 @@ public class ClickInformation {
      * @return The type of click
      */
     public ClickType getClickType() {
-        return handle.getClick();
+        return clickType;
     }
 
     /**
@@ -92,7 +101,7 @@ public class ClickInformation {
             case HOTBAR_SWAP:
                 return true;
             case MOVE_TO_OTHER_INVENTORY:
-                return handle.getView().getBottomInventory() == handle.getClickedInventory();
+                return handle.getView().getBottomInventory() == clicked;
             default:
                 return false;
         }
@@ -112,7 +121,7 @@ public class ClickInformation {
             case MOVE_TO_OTHER_INVENTORY:
             case HOTBAR_MOVE_AND_READD:
             case HOTBAR_SWAP:
-                return handle.getView().getTopInventory() == handle.getClickedInventory();
+                return handle.getView().getTopInventory() == clicked;
             default:
                 return isDroppingItem();
         }

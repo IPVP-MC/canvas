@@ -1,12 +1,18 @@
 package org.ipvp.canvas;
 
+import java.util.Map;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.DragType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
@@ -22,6 +28,37 @@ import org.ipvp.canvas.type.BoxMenu;
  */
 public final class MenuFunctionListener implements Listener {
 
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void handleGuiDrag(InventoryDragEvent event) {
+        InventoryView view = event.getView();
+        Inventory top = view.getTopInventory();
+        
+        // We are only processing drags that affect menus
+        if (top.getHolder() instanceof Menu) {
+            Menu menu = (Menu) top.getHolder();
+            ClickType clickType = event.getType() == DragType.EVEN ? ClickType.LEFT : ClickType.RIGHT;
+            
+            // Go through each slot affected and the item being inserted and pass the 
+            // event through to the menu as a slot click
+            Map<Integer, ItemStack> newItems = event.getNewItems();
+
+            for (Map.Entry<Integer, ItemStack> entry : newItems.entrySet()) {
+                int index = entry.getKey();
+                ItemStack item = entry.getValue();
+                if (index < top.getSize()) {
+                    InventoryAction action = item.getAmount() > 1 ? InventoryAction.PLACE_SOME : InventoryAction.PLACE_ONE;
+                    passClickToSlot(event, action, clickType, top, menu, index);
+                    
+                    // If the event has been denied by any slot we simply exit out as 
+                    // nothing else should be processed
+                    if (event.getResult() == Event.Result.DENY) {
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void handleGuiClick(InventoryClickEvent event) {
         InventoryView view = event.getView();
@@ -160,18 +197,25 @@ public final class MenuFunctionListener implements Listener {
         return -1;
     }
     
+    // Passes an inventory click event to a menu at a given slot
+    private void passClickToSlot(InventoryClickEvent event, Menu menu, int slotIndex) {
+        passClickToSlot(event, event.getAction(), event.getClick(), event.getClickedInventory(), menu, slotIndex);
+    }
+    
     // Handles events where a slot was clicked inside an inventory
-    private void passClickToSlot(InventoryClickEvent handle, Menu menu, int slotIndex) {        
+    private void passClickToSlot(InventoryInteractEvent handle, InventoryAction inventoryAction, ClickType clickType, 
+                                 Inventory clicked, Menu menu, int slotIndex) {        
         // Fetch the slot that was clicked and process the information here
         Slot slot = menu.getSlot(slotIndex);
         ClickOptions options = slot.getClickOptions();
         
         // Check the options of the slot and set the result if the click is not allowed
-        if (!options.isAllowedClickType(handle.getClick()) || !options.isAllowedAction(handle.getAction())) {
+        if (!options.isAllowedClickType(clickType) || !options.isAllowedAction(inventoryAction)) {
             handle.setResult(Event.Result.DENY);
         }
         
-        ClickInformation clickInformation = new ClickInformation(handle, menu, slot, handle.getResult());
+        ClickInformation clickInformation = new ClickInformation(handle, inventoryAction, clickType,
+                clicked, menu, slot, handle.getResult());
 
         // Process the click information for the event if the slot has a click handler
         if (slot.getClickHandler().isPresent()) {
