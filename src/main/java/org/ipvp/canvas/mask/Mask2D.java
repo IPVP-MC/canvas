@@ -18,8 +18,8 @@ public class Mask2D implements Mask {
     }
 
     @Override
-    public boolean test(int slot) {
-        return mask.contains(slot);
+    public boolean test(int index) {
+        return mask.contains(index);
     }
 
     @Override
@@ -27,6 +27,9 @@ public class Mask2D implements Mask {
         return test(row * 9 + col);
     }
 
+    /**
+     * @return All indices affected by this mask
+     */
     public List<Integer> getMask() {
         return mask;
     }
@@ -90,7 +93,7 @@ public class Mask2D implements Mask {
         }
 
         @Override
-        public Builder nextLine() {
+        public Builder nextLine() throws IllegalStateException {
             if (currentLine == mask.length){
                 throw new IllegalStateException("already at end");
             }
@@ -99,7 +102,7 @@ public class Mask2D implements Mask {
         }
 
         @Override
-        public Builder previousLine() {
+        public Builder previousLine() throws IllegalStateException {
             if (currentLine == 0) {
                 throw new IllegalStateException("already at start");
             }
