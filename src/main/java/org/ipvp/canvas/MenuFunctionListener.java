@@ -3,6 +3,7 @@ package org.ipvp.canvas;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -20,7 +21,7 @@ import org.ipvp.canvas.slot.Slot;
  */
 public final class MenuFunctionListener implements Listener {
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void handleGuiClick(InventoryClickEvent event) {
         InventoryView view = event.getView();
         Inventory top = view.getTopInventory();
