@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.ipvp.canvas.slot.ClickOptions;
 import org.ipvp.canvas.slot.Slot;
 
 /**
@@ -161,6 +162,13 @@ public final class MenuFunctionListener implements Listener {
     private void passClickToSlot(InventoryClickEvent handle, Menu menu, int slotIndex) {        
         // Fetch the slot that was clicked and process the information here
         Slot slot = menu.getSlot(slotIndex);
+        ClickOptions options = slot.getClickOptions();
+        
+        // Check the options of the slot and set the result if the click is not allowed
+        if (!options.isAllowedClickType(handle.getClick()) || !options.isAllowedAction(handle.getAction())) {
+            handle.setResult(Event.Result.DENY);
+        }
+        
         ClickInformation clickInformation = new ClickInformation(handle, menu, slot, handle.getResult());
 
         // Process the click information for the event if the slot has a click handler

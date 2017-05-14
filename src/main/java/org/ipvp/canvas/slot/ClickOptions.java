@@ -10,7 +10,7 @@ import org.ipvp.canvas.ClickInformation;
 /**
  * Restrictions for when the execution of a Button will pass
  */
-public class ClickOptions implements Predicate<ClickInformation> {
+public class ClickOptions {
 
     /**
      * Click options that allow all actions and click types.
@@ -55,12 +55,6 @@ public class ClickOptions implements Predicate<ClickInformation> {
      */
     public static Builder builder() {
         return new Builder();
-    }
-
-    @Override
-    public boolean test(ClickInformation clickInformation) {
-        return isAllowedAction(clickInformation.getAction())
-                && isAllowedClickType(clickInformation.getClickType());
     }
 
     /**
