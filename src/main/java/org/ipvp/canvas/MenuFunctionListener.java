@@ -12,6 +12,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.slot.ClickOptions;
 import org.ipvp.canvas.slot.Slot;
+import org.ipvp.canvas.type.BoxMenu;
 
 /**
  * A listener that maintains the required functions of Menus.
@@ -179,5 +180,19 @@ public final class MenuFunctionListener implements Listener {
 
         // Complete the handling of the event by setting the result of the click
         handle.setResult(clickInformation.getResult());
+    }
+    
+    @EventHandler(ignoreCancelled = true)
+    public void preventShiftClickInCustomTiles(InventoryClickEvent event) {
+        Inventory top = event.getView().getTopInventory();
+        
+        // If the player is shift clicking an item into a box menu we disallow it
+        // because certain custom inventories shoot off a StackOverflowError when 
+        // this event is allowed to process.
+        if (top.getHolder() instanceof BoxMenu
+                && top != event.getClickedInventory()
+                && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+            event.setCancelled(true);
+        }
     }
 }
