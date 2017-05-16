@@ -35,7 +35,7 @@ public interface Menu extends InventoryHolder {
      * @param viewer The player who currently is viewing this Menu
      * @throws IllegalStateException If the Player is not viewing the Menu
      */
-    void close(Player viewer);
+    void close(Player viewer) throws IllegalStateException;
 
     /**
      * Returns the Slot found at the given index of the Menu
