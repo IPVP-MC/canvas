@@ -51,7 +51,7 @@ public interface Menu extends InventoryHolder {
     void clear();
 
     /**
-     * Clears out a particular Button at the given index
+     * Clears out a particular Slot at the given index
      *
      * @param index The index number to clear
      */
