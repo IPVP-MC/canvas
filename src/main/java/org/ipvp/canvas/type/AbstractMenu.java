@@ -1,5 +1,6 @@
 package org.ipvp.canvas.type;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -7,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.ipvp.canvas.ArrayIterator;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.slot.DefaultSlot;
 import org.ipvp.canvas.slot.Slot;
@@ -72,6 +74,11 @@ public abstract class AbstractMenu implements Menu  {
     @Override
     public Slot getSlot(int index) {
         return slots[index];
+    }
+
+    @Override
+    public Iterator<Slot> iterator() {
+        return new ArrayIterator<>(slots);
     }
 
     @Override

@@ -13,7 +13,7 @@ import org.ipvp.canvas.slot.Slot;
  * Menu interaction will not function properly unless an instance of {@link MenuFunctionListener}
  * is properly registered with the Bukkit event scheduler.
  */
-public interface Menu extends InventoryHolder {
+public interface Menu extends InventoryHolder, Iterable<Slot> {
 
     /**
      * Returns the fallback Menu for when this menu is closed
