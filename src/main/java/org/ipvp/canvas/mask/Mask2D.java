@@ -93,7 +93,7 @@ public class Mask2D implements Mask {
         }
 
         @Override
-        public Builder nextLine() throws IllegalStateException {
+        public Builder nextRow() throws IllegalStateException {
             if (currentLine == mask.length){
                 throw new IllegalStateException("already at end");
             }
@@ -102,7 +102,7 @@ public class Mask2D implements Mask {
         }
 
         @Override
-        public Builder previousLine() throws IllegalStateException {
+        public Builder previousRow() throws IllegalStateException {
             if (currentLine == 0) {
                 throw new IllegalStateException("already at start");
             }

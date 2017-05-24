@@ -48,14 +48,14 @@ public interface Mask extends Iterable<Integer> {
          * @return The number of columns the pattern affects
          */
         int columns();
-
+        
         /**
          * Increments the line counter to point to the next line
          * 
          * @return Fluent pattern
          * @throws IllegalStateException If the Builder is at the last line
          */
-        Builder nextLine();
+        Builder nextRow();
 
         /**
          * Decrements the line counter to point to the previous line
@@ -63,7 +63,7 @@ public interface Mask extends Iterable<Integer> {
          * @return Fluent pattern
          * @throws IllegalStateException If the Builder is at the first line
          */
-        Builder previousLine() throws IllegalStateException;
+        Builder previousRow() throws IllegalStateException;
 
         /**
          * Applies a pattern to the line at the current index. 
