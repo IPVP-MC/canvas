@@ -93,6 +93,15 @@ public class Mask2D implements Mask {
         }
 
         @Override
+        public Mask.Builder row(int row) throws IllegalStateException {
+            if (row < 0 || row >= rows) {
+                throw new IllegalStateException("row not between 0 and " + rows());
+            }
+            currentLine = row;
+            return this;
+        }
+
+        @Override
         public Builder nextRow() throws IllegalStateException {
             if (currentLine == mask.length){
                 throw new IllegalStateException("already at end");

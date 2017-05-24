@@ -48,6 +48,15 @@ public interface Mask extends Iterable<Integer> {
          * @return The number of columns the pattern affects
          */
         int columns();
+
+        /**
+         * Points the builder to a specific row to apply a mask to.
+         * 
+         * @param row The row number
+         * @return Fluent pattern
+         * @throws IllegalStateException If the row is not covered by the mask
+         */
+        Builder row(int row) throws IllegalStateException;
         
         /**
          * Increments the line counter to point to the next line
