@@ -57,7 +57,7 @@ public class Mask2D implements Mask {
      * @param cols The amount of columns to cover
      * @return A mask builder for the specified number of rows and columns
      */
-    public static Builder builder(int rows, int cols) {
+    public static Mask2D.Builder builder(int rows, int cols) {
         return new Builder(rows, cols);
     }
 
@@ -93,7 +93,7 @@ public class Mask2D implements Mask {
         }
 
         @Override
-        public Mask.Builder row(int row) throws IllegalStateException {
+        public Builder row(int row) throws IllegalStateException {
             if (row < 0 || row >= rows) {
                 throw new IllegalStateException("row not between 0 and " + rows());
             }
