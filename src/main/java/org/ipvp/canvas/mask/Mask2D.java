@@ -121,7 +121,7 @@ public class Mask2D implements Mask {
         }
 
         @Override
-        public Mask build() {
+        public Mask2D build() {
             List<Integer> slots = new ArrayList<>();
             for (int r = 0; r < mask.length ; r++) {
                 int[] col = mask[r];
