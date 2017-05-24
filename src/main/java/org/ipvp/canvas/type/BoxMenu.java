@@ -13,7 +13,7 @@ import org.ipvp.canvas.Menu;
  */
 public class BoxMenu extends AbstractMenu {
 
-    BoxMenu(String title, InventoryType type, Menu menu) {
+    protected BoxMenu(String title, InventoryType type, Menu menu) {
         super(title, type, menu);
     }
 

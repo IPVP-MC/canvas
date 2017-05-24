@@ -8,7 +8,7 @@ import org.ipvp.canvas.Menu;
  */
 public class HopperMenu extends AbstractMenu {
 
-    HopperMenu(String title, Menu menu) {
+    protected HopperMenu(String title, Menu menu) {
         super(title, InventoryType.HOPPER, menu);
     }
 

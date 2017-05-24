@@ -7,7 +7,7 @@ import org.ipvp.canvas.Menu;
  */
 public class ChestMenu extends AbstractMenu {
 
-    ChestMenu(String title, int slots, Menu menu) {
+    protected ChestMenu(String title, int slots, Menu menu) {
         super(title, slots, menu);
     }
 
