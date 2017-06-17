@@ -23,6 +23,13 @@ public interface Menu extends InventoryHolder, Iterable<Slot> {
     Optional<Menu> getParent();
 
     /**
+     * Sets the fallback menu for when the menu is closed
+     * 
+     * @param parent Fallback menu
+     */
+    void setParent(Menu parent);
+
+    /**
      * Opens the Menu for a Player
      *
      * @param viewer The player to view the Menu

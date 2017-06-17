@@ -58,6 +58,11 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
+    public void setParent(Menu parent) {
+        this.parent = parent;
+    }
+
+    @Override
     public void open(Player viewer) {
         viewer.openInventory(getInventory());
     }
