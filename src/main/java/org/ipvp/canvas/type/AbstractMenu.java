@@ -22,6 +22,7 @@ public abstract class AbstractMenu implements Menu  {
     private final Inventory inventory;
     private Menu parent;
     private Slot[] slots;
+    private CloseHandler handler;
 
     protected AbstractMenu(String title, int slots, Menu parent) {
         if (title == null) {
@@ -97,6 +98,16 @@ public abstract class AbstractMenu implements Menu  {
     @Override
     public Inventory getInventory() {
         return inventory;
+    }
+
+    @Override
+    public void setCloseHandler(CloseHandler handler) {
+        this.handler = handler;
+    }
+
+    @Override
+    public Optional<CloseHandler> getCloseHandler() {
+        return Optional.ofNullable(handler);
     }
 
     /**
