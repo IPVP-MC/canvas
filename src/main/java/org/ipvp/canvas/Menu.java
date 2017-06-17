@@ -65,6 +65,37 @@ public interface Menu extends InventoryHolder, Iterable<Slot> {
     Dimension getDimensions();
 
     /**
+     * Returns a user-defined handler for when a Player closes the menu.
+     *
+     * @return The close handler
+     */
+    Optional<CloseHandler> getCloseHandler();
+
+    /**
+     * Sets a new handler policy for when a Player closes the menu.
+     *
+     * @param handler The new close handler
+     */
+    void setCloseHandler(CloseHandler handler);
+
+    /**
+     * A Menu close handler is a user defined function or policy that occurs when a
+     * Player closes a menu.
+     */
+    @FunctionalInterface
+    interface CloseHandler {
+
+        /**
+         * Called when a Player closes a menu, be it by navigating to a different 
+         * inventory screen, or logging off.
+         *
+         * @param player The player that closed the menu
+         * @param menu Menu that was closed
+         */
+        void close(Player player, Menu menu);
+    }
+
+    /**
      * A Builder for Menus
      */
     interface Builder {

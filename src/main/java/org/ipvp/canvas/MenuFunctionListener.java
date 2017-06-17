@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.DragType;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -249,6 +250,18 @@ public final class MenuFunctionListener implements Listener {
                 return true;
             default:
                 return false;
+        }
+    }
+    
+    @EventHandler
+    public void triggerCloseHandler(InventoryCloseEvent event) {
+        Inventory closed = event.getInventory();
+        
+        // If the player is closing a menu that has a close handler,
+        // we trigger the handler for functions to run
+        if (closed.getHolder() instanceof Menu) {
+            Menu menu = (Menu) closed.getHolder();
+            menu.getCloseHandler().ifPresent(h -> h.close((Player) event.getPlayer(), menu));
         }
     }
 }
