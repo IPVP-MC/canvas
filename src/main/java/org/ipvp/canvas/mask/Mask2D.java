@@ -123,7 +123,8 @@ public class Mask2D implements Mask {
         public Builder apply(String pattern) {
             char[] chars = pattern.toCharArray();
             for (int i = 0 ; i < 9 && i < chars.length ; i++) {
-                int c = (int) chars[i];
+                String ch = String.valueOf(chars[i]);
+                int c = Integer.parseInt(ch);
                 mask[currentLine][i] = Math.min(c, 1);
             }
             return this;
@@ -134,10 +135,10 @@ public class Mask2D implements Mask {
             List<Integer> slots = new ArrayList<>();
             for (int r = 0; r < mask.length ; r++) {
                 int[] col = mask[r];
-                for (int c = 0 ; c < col.length ;c++) {
+                for (int c = 0 ; c < col.length ; c++) {
                     int state = col[c];
                     if (state == 1) {
-                        slots.add(r * 9 + c);
+                        slots.add(r * columns() + c);
                     }
                 }
             }
