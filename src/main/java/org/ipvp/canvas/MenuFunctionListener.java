@@ -2,6 +2,7 @@ package org.ipvp.canvas;
 
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -134,41 +135,24 @@ public final class MenuFunctionListener implements Listener {
                     }
                     
                     ItemStack moving = event.getCurrentItem();
-                    int firstMergeSlot = getNextAvailableSlot(top, moving); // Find the first item merging slot
+                    int amountLeft = moving.getAmount();
+                    int nextAvailableSlot = getNextAvailableSlot(top, moving);
                     
-                    // An exit code of -1 indicates that no similar item was found and that
-                    // the item will be moved into an empty slot.
-                    if (firstMergeSlot == -1) {
-                        firstMergeSlot = top.firstEmpty();
-                        if (firstMergeSlot != -1) {
-                            passClickToSlot(event, menu, firstMergeSlot);
+                    // We iterate over the next available merge slots while the item is being merged (amount > 0)
+                    // to pass the event to all of the slots that will be effected. Once the event is denied,
+                    // the item is fully taken care of by all slots, or the inventory runs out of space we are
+                    // safe to break out of the loop.
+                    while (nextAvailableSlot > -1 && amountLeft > 0 && event.getResult() != Event.Result.DENY) {
+                        ItemStack inSlot = top.getItem(nextAvailableSlot);
+                        if (inSlot == null || inSlot.getType() == Material.AIR) {
+                            amountLeft -= moving.getMaxStackSize();
+                        } else {
+                            int size = inSlot.getAmount();
+                            amountLeft -= (moving.getMaxStackSize() - size);
                         }
-                        return;
-                    }
-                    
-                    // If there is a similar item, we need to check and process any item 
-                    // overflowing in the inventory
-                    passClickToSlot(event, menu, firstMergeSlot); // Pass the click to the first affected slot
-                    
-                    // Only proceed if the first slot didn't reject the event
-                    if (event.getResult() != Event.Result.DENY) {
-                        ItemStack target = top.getItem(firstMergeSlot); // Get the target item that we are merging into
-                        int extraSpace = target.getMaxStackSize() - target.getAmount();
-                        int overflow = moving.getAmount() - extraSpace;
                         
-                        // If there is some overflow in the inventory we must find the next slot affected
-                        // to pass the click to
-                        if (overflow > 0) {
-                            int nextSlot = getNextAvailableSlot(top, moving, firstMergeSlot); // Find next slot available
-                            if (nextSlot == -1) {
-                                nextSlot = top.firstEmpty();
-                                if (nextSlot == -1) { // If it's still empty the inventory is full so we can exit
-                                    return;
-                                }
-                            }
-                            
-                            passClickToSlot(event, menu, nextSlot); // Pass the click to the next affected slot
-                        }
+                        passClickToSlot(event, menu, nextAvailableSlot);
+                        nextAvailableSlot = getNextAvailableSlot(top, moving, nextAvailableSlot + 1);
                     }
                     
                     break;
@@ -178,24 +162,22 @@ public final class MenuFunctionListener implements Listener {
     
     // Gets the next available slot that an item can be merged into
     private int getNextAvailableSlot(Inventory inventory, ItemStack moving) {
-        return getNextAvailableSlot(inventory, moving, -1);
+        return getNextAvailableSlot(inventory, moving, 0);
     }
     
-    // Gets the next available slot that an item can be merged into, ignoring a specific slot
-    private int getNextAvailableSlot(Inventory inventory, ItemStack moving, int ignoreSlot) {
-        int targetSlot = 0;
-
-        // We search the top inventory for the target slot/item that the item
-        // clicked will be merged with. We retrieve the slot
-        while (targetSlot < inventory.getSize()) {
+    // Gets the next available slot that an item can be merged into, after a specific slot
+    private int getNextAvailableSlot(Inventory inventory, ItemStack moving, int startPosition) {
+        // Start at the starting position and iterate through every slot in the inventory. We search
+        // the inventory for the target slot that is related to the item being moved.
+        for (int targetSlot = startPosition ; targetSlot < inventory.getSize() ; targetSlot++) {
             ItemStack inSlot = inventory.getItem(targetSlot);
-            if (targetSlot != ignoreSlot && moving.isSimilar(inSlot) && inSlot.getAmount() < inSlot.getMaxStackSize()) {
+            if (moving.isSimilar(inSlot) && inSlot.getAmount() < inSlot.getMaxStackSize()) {
                 return targetSlot;
             }
-            targetSlot++;
         }
         
-        return -1;
+        // Default return value of -1 to indicate no similar slot found.
+        return inventory.firstEmpty();
     }
     
     // Passes an inventory click event to a menu at a given slot
