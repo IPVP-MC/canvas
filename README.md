@@ -46,7 +46,7 @@ Out of the box, canvas supports the following inventory types as menus:
 * [Chest menus](src/main/java/org/ipvp/canvas/type/ChestMenu.java)
 * [Hopper menus](src/main/java/org/ipvp/canvas/type/HopperMenu.java)
 * [Box menus](src/main/java/org/ipvp/canvas/type/BoxMenu.java) (ie. 3x3 inventories such as workbench, dispenser, dropper)
-<sub><sup>Note: Due to an error in internal Minecraft code, shift clicking is disabled in Hopper and Box menus.</sup></sub>
+  * Note: Due to an error in internal Minecraft code, shift clicking is disabled in Hopper and Box menus.
 
 The above menus can be created by using the Builder pattern available in their respective classes. Creating a standard [ChestMenu](src/main/java/org/ipvp/canvas/type/ChestMenu.java) with 4 rows would look as such:
 
