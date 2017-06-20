@@ -58,7 +58,7 @@ public Menu createMenu() {
 }
 ```
 
-Displaying the menu to a player is made simple
+Displaying the menu to a player is made simple with `Menu#open(Player)`
 ```java
 public void displayMenu(Player player) {
     Menu menu = createMenu();
@@ -94,7 +94,7 @@ There are 3 major pieces to Slot functionality:
 #### ClickOptions
 Click options are the primary method of controlling what actions and click types can be performed on the raw item contents of the holding inventory. Two basic sets are provided with the library, which are `ClickOptions.ALLOW_ALL` and `ClickOptions.DENY_ALL`. By default, slots carry the DENY_ALL trait, denying all pickup and dropping off of items in the respective inventory. These behaviors are easily modified with the `Slot#setClickOptions(ClickOptions)` method.
 
-Creation of custom options is done through the ClickOptions.Builder class. In the following example, we show you how to only allow dropping off of items into a specific slot, but not picking it up.
+Creation of custom options is done through the `ClickOptions.Builder` class. In the following example, we show you how to only allow dropping off of items into a specific slot, but not picking it up.
 
 ```java
 public void addClickOptions(Slot slot) {
