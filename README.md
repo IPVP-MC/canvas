@@ -34,6 +34,7 @@ You will now be able to add canvas as a repository in your pom.xml files with th
 ```
 
 Once the dependency is registered, the only thing left to do is to register the [MenuFunctionListener](src/main/java/org/ipvp/canvas/MenuFunctionListener.java) with the Bukkit event dispatcher.
+
 ```java
 Bukkit.getPluginManager().registerEvents(new MenuFunctionListener(), plugin);
 ```
@@ -66,9 +67,10 @@ public void displayMenu(Player player) {
 ```
 
 Simple yet effective, our result looks like this:
+
 ![](http://i.imgur.com/LXnCkLv.png)
 
-##### Close handlers
+#### Close handlers
 Functionality when a Menu is closed can be added to Menus through the Menu.CloseHandler interface. The interface is meant to be used as a functional interface, and functionality is added elegantly with Java 8 lambda expressions.
 
 Let's say we want to send the player some messages when they leave the inventory:
@@ -85,12 +87,12 @@ public void addCloseHandler(Menu menu) {
 A [Slot](src/main/java/org/ipvp/canvas/slot/Slot.java) is exactly what you'd expect it to be, however canvas allows incredible customization of what they can do. Menus grant access to their slots by through the `Menu#getSlot(int)` method.
 
 There are 3 major pieces to Slot functionality:
-* [ClickOption](src/main/java/org/ipvp/canvas/slot/ClickOption.java)
+* [ClickOptions](src/main/java/org/ipvp/canvas/slot/ClickOptions.java)
 * [ClickInformation](src/main/java/org/ipvp/canvas/ClickInformation.java)
 * [ClickHandler](src/main/java/org/ipvp/canvas/slot/Slot.java)
 
-##### ClickOption
-Click options are the primary method of controlling what actions and click types can be performed on the raw item contents of the holding inventory. Two basic sets are provided with the library, which are ClickOptions.ALLOW_ALL and ClickOptions.DENY_ALL. By default, slots carry the DENY_ALL trait, denying all pickup and dropping off of items in the respective inventory. These behaviors are easily modified with the `Slot#setClickOptions(ClickOptions)` method.
+#### ClickOptions
+Click options are the primary method of controlling what actions and click types can be performed on the raw item contents of the holding inventory. Two basic sets are provided with the library, which are `ClickOptions.ALLOW_ALL` and `ClickOptions.DENY_ALL`. By default, slots carry the DENY_ALL trait, denying all pickup and dropping off of items in the respective inventory. These behaviors are easily modified with the `Slot#setClickOptions(ClickOptions)` method.
 
 Creation of custom options is done through the ClickOptions.Builder class. In the following example, we show you how to only allow dropping off of items into a specific slot, but not picking it up.
 
@@ -104,10 +106,10 @@ public void addClickOptions(Slot slot) {
 }
 ```
 
-##### ClickInformation
+#### ClickInformation
 [ClickInformation](src/main/java/org/ipvp/canvas/ClickInformation.java) is a class constructed to provide the ClickHandler of a Slot with all available information about a click performed on the Slot. Also available is the possibility to change the resulting outcome of the click (whether interaction in the raw inventory occurs).
 
-##### ClickHandler
+#### ClickHandler
 Click handlers are where most of the logic of a slot will occur. As a slot is clicked, the click handler (if present) is triggered with information about who clicked as well as the click performed. The handler of a slot will always be triggered, regardless of whether or not the options of a slot forbid interaction with it. Keep in mind that the result of the click will be set by the options before the handler is triggered and as such the ClickInformation will represent this result.
 
 Adding a handler is made simple with `Slot#setClickHandler(ClickHandler)`:
@@ -125,6 +127,7 @@ public void addClickHandler(Slot slot) {
 Masks create a layer of abstraction over raw inventory slot IDs. Through the usage of masks, populating specific slots inside an inventory has never been easier. Let's start with an example.
 
 Suppose we begin with the previously created menu:
+
 ![](http://i.imgur.com/LXnCkLv.png)
 
 If we wanted to create a basic border of white glass on the outer slots, we would normally have to figure out which values reference those slots. These 22 slot IDs are 0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35. If we didn't already store these values inside an `int[]` array, some general code might look something like this:
@@ -163,6 +166,7 @@ public void addWhiteBorder(Inventory inventory) {
 Masks provide an incredibly simple interface for labelling slots. In the case of [Mask2D](src/main/java/org/ipvp/canvas/mask/Mask2D.java), each character represents a boolean value of whether or not the slot should be selected. A character value of '1' represents yes and all other characters the opposite. This model provides a semi-visual view of what the inventory will look like and is easy to add or remove specific slots.
 
 The final product we end up with is:
+
 ![](http://i.imgur.com/BHt65l6.png)
 
 ## License
