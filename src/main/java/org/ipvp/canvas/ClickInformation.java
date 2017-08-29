@@ -26,10 +26,9 @@ package org.ipvp.canvas;
 import java.util.Objects;
 
 import org.bukkit.event.Event;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.slot.Slot;
 
 /**
@@ -109,6 +108,23 @@ public class ClickInformation {
     public void setResult(Event.Result result) {
         Objects.requireNonNull(result);
         this.result = result;
+    }
+
+    /**
+     * Returns the item that is being added into the clicked slot
+     *
+     * @return Item being added
+     * @throws IllegalStateException If {@link #isAddingItem()} is false
+     */
+    public ItemStack getAddingItem() {
+       if (!isAddingItem()) {
+           throw new IllegalStateException("Not adding item");
+       } else if (handle instanceof InventoryDragEvent) {
+           InventoryDragEvent event = (InventoryDragEvent) handle;
+           return event.getNewItems().get(clickedSlot.getIndex());
+       } else {
+           return ((InventoryClickEvent) handle).getCursor();
+       }
     }
 
     /**
