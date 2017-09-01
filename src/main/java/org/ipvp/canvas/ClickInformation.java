@@ -123,7 +123,9 @@ public class ClickInformation {
            InventoryDragEvent event = (InventoryDragEvent) handle;
            return event.getNewItems().get(clickedSlot.getIndex());
        } else {
-           return ((InventoryClickEvent) handle).getCursor();
+           InventoryClickEvent clickEvent = ((InventoryClickEvent) handle);
+           return clickEvent.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY
+                   ? clickEvent.getCurrentItem() : clickEvent.getCursor();
        }
     }
 
