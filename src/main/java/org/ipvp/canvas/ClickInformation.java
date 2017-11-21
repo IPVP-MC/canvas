@@ -154,7 +154,7 @@ public class ClickInformation {
             case DROP_ONE_SLOT:
                 return 1;
             case PICKUP_HALF:
-                return getClickedSlot().getItem().getAmount() / 2;
+                return (int) Math.ceil(getClickedSlot().getItem().getAmount() / 2D);
             case PICKUP_ALL:
             case DROP_ALL_SLOT:
                 return getClickedSlot().getItem().getAmount();
