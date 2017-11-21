@@ -72,8 +72,8 @@ public final class MenuFunctionListener implements Listener {
                 ItemStack item = entry.getValue();
                 if (index < top.getSize()) {
                     InventoryAction action = item.getAmount() > 1 ? InventoryAction.PLACE_SOME : InventoryAction.PLACE_ONE;
-                    passClickToSlot(event, action, clickType, top, menu, index);
-                    
+                    passClickToSlot(event, action, clickType, top, menu, index, event.getNewItems().get(index));
+
                     // If the event has been denied by any slot we simply exit out as 
                     // nothing else should be processed
                     if (event.getResult() == Event.Result.DENY) {
@@ -167,14 +167,21 @@ public final class MenuFunctionListener implements Listener {
                     // safe to break out of the loop.
                     while (nextAvailableSlot > -1 && amountLeft > 0 && event.getResult() != Event.Result.DENY) {
                         ItemStack inSlot = top.getItem(nextAvailableSlot);
+
+                        int maxAvailable; // Track how much we will be adding to the stack
+
                         if (inSlot == null || inSlot.getType() == Material.AIR) {
-                            amountLeft -= moving.getMaxStackSize();
+                            maxAvailable = moving.getMaxStackSize();
                         } else {
-                            int size = inSlot.getAmount();
-                            amountLeft -= (moving.getMaxStackSize() - size);
+                            maxAvailable = inSlot.getMaxStackSize() - inSlot.getAmount();
                         }
-                        
-                        passClickToSlot(event, menu, nextAvailableSlot);
+
+                        maxAvailable = Math.min(maxAvailable, amountLeft);
+                        amountLeft -= maxAvailable;
+
+                        ItemStack adding = new ItemStack(moving);
+                        adding.setAmount(maxAvailable);
+                        passClickToSlot(event, event.getAction(), event.getClick(), event.getClickedInventory(), menu, nextAvailableSlot, adding);
                         nextAvailableSlot = getNextAvailableSlot(top, moving, nextAvailableSlot + 1);
                     }
                     
@@ -210,18 +217,26 @@ public final class MenuFunctionListener implements Listener {
     
     // Handles events where a slot was clicked inside an inventory
     private void passClickToSlot(InventoryInteractEvent handle, InventoryAction inventoryAction, ClickType clickType, 
-                                 Inventory clicked, Menu menu, int slotIndex) {        
+                                 Inventory clicked, Menu menu, int slotIndex) {
+
+
+        passClickToSlot(handle, inventoryAction, clickType, clicked, menu, slotIndex, null); // TODO
+    }
+
+    // Handles events where a slot was clicked inside an inventory
+    private void passClickToSlot(InventoryInteractEvent handle, InventoryAction inventoryAction, ClickType clickType,
+                                 Inventory clicked, Menu menu, int slotIndex, ItemStack addingItem) {
         // Fetch the slot that was clicked and process the information here
         Slot slot = menu.getSlot(slotIndex);
         ClickOptions options = slot.getClickOptions();
-        
+
         // Check the options of the slot and set the result if the click is not allowed
         if (!options.isAllowedClickType(clickType) || !options.isAllowedAction(inventoryAction)) {
             handle.setResult(Event.Result.DENY);
         }
-        
+
         ClickInformation clickInformation = new ClickInformation(handle, inventoryAction, clickType,
-                clicked, menu, slot, handle.getResult());
+                clicked, menu, slot, handle.getResult(), addingItem);
 
         // Process the click information for the event if the slot has a click handler
         if (slot.getClickHandler().isPresent()) {
