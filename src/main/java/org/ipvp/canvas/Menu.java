@@ -24,10 +24,11 @@
 package org.ipvp.canvas;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
 import org.ipvp.canvas.slot.Slot;
+import org.ipvp.canvas.type.MenuHolder;
 
 /**
  * A menu represents an interactive interface for Players backed by instances of 
@@ -36,7 +37,7 @@ import org.ipvp.canvas.slot.Slot;
  * Menu interaction will not function properly unless an instance of {@link MenuFunctionListener}
  * is properly registered with the Bukkit event scheduler.
  */
-public interface Menu extends InventoryHolder, Iterable<Slot> {
+public interface Menu extends Iterable<Slot> {
 
     /**
      * Returns the fallback Menu for when this menu is closed
@@ -176,6 +177,32 @@ public interface Menu extends InventoryHolder, Iterable<Slot> {
          */
         public int getColumns() {
             return columns;
+        }
+
+        /**
+         * Returns the total area (slots) of the Menu
+         *
+         * @return The slot count
+         */
+        public int getArea() {
+            return rows * columns;
+        }
+
+        @Override
+        public int hashCode() {
+            return rows * 31 + columns * 31;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other == this) {
+                return true;
+            } else if (!(other instanceof Dimension)) {
+                return false;
+            }
+
+            Dimension o = (Dimension) other;
+            return o.rows == this.rows && o.columns == this.columns;
         }
     }
 }

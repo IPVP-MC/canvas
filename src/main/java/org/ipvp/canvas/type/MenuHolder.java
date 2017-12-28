@@ -23,49 +23,42 @@
 
 package org.ipvp.canvas.type;
 
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.ipvp.canvas.Menu;
 
-/**
- * A menu that is backed by a chest inventory.
- */
-public class ChestMenu extends AbstractMenu {
+import java.util.Objects;
 
-    protected ChestMenu(String title, int slots, Menu menu) {
-        super(title, slots, menu);
+public class MenuHolder implements InventoryHolder {
+
+    private Menu menu;
+    private Inventory inventory;
+
+    MenuHolder(Menu menu) {
+        this(menu, null);
     }
 
-    /**
-     * Returns a new builder.
-     *
-     * @param rows The amount of rows for the inventory to contain
-     * @throws IllegalArgumentException if rows is not between 1 and 6 inclusive
-     */
-    public static Builder builder(int rows) {
-        if (rows < 1 || rows > 6) {
-            throw new IllegalArgumentException("invalid row count");
-        }
-        return new Builder(rows * 9);
+    MenuHolder(Menu menu, Inventory inventory) {
+        this.menu = menu;
+        this.inventory = inventory;
+    }
+
+    public Menu getMenu() {
+        return menu;
+    }
+
+    void setMenu(Menu menu) {
+        Objects.requireNonNull(menu);
+        this.menu = menu;
     }
 
     @Override
-    public Dimension getDimensions() {
-        return new Dimension(inventorySlots / 9, 9);
+    public Inventory getInventory() {
+        return inventory;
     }
 
-    /**
-     * A builder for creating a ChestMenu instance.
-     */
-    public static class Builder extends AbstractMenu.Builder {
-
-        private int size;
-
-        Builder(int size) {
-            this.size = size;
-        }
-
-        @Override
-        public ChestMenu build() {
-            return new ChestMenu(getTitle(), size, getParent());
-        }
+    void setInventory(Inventory inventory) {
+        Objects.requireNonNull(inventory);
+        this.inventory = inventory;
     }
 }

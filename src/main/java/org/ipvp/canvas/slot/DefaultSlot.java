@@ -26,28 +26,35 @@ package org.ipvp.canvas.slot;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.ipvp.canvas.type.AbstractMenu;
+import org.ipvp.canvas.type.MenuHolder;
 
 /**
  * A slot defined for default use by all Menus defined by this library.
  */
 public class DefaultSlot implements Slot {
 
-    private final Inventory handle;
+    private final AbstractMenu handle;
     private final int index;
+    private ItemStack item;
     private ClickOptions options;
     private ClickHandler handler;
     
-    public DefaultSlot(Inventory handle, int index) {
+    public DefaultSlot(AbstractMenu handle, int index) {
         this(handle, index, ClickOptions.DENY_ALL);
     }
 
-    public DefaultSlot(Inventory handle, int index, ClickOptions options) {
+    public DefaultSlot(AbstractMenu handle, int index, ClickOptions options) {
+        this(handle, index, options, null);
+    }
+
+    private DefaultSlot(AbstractMenu handle, int index, ClickOptions options, ClickHandler handler) {
         Objects.requireNonNull(handle);
         this.handle = handle;
         this.index = index;
         setClickOptions(options);
+        this.handler = handler;
     }
 
     @Override
@@ -68,12 +75,14 @@ public class DefaultSlot implements Slot {
 
     @Override
     public ItemStack getItem() {
-        return handle.getItem(index);
+        return this.item;
     }
 
     @Override
     public void setItem(ItemStack item) {
-        handle.setItem(index, item);
+        this.item = item == null ? null : new ItemStack(item);
+        handle.getViewers().stream().map(MenuHolder::getInventory)
+                .forEach(i -> i.setItem(index, item));
     }
 
     @Override

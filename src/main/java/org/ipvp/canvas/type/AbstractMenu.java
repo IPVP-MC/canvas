@@ -23,14 +23,18 @@
 
 package org.ipvp.canvas.type;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.ipvp.canvas.ArrayIterator;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.slot.DefaultSlot;
@@ -42,18 +46,24 @@ import org.ipvp.canvas.slot.Slot;
  */
 public abstract class AbstractMenu implements Menu  {
 
-    private final Inventory inventory;
     private Menu parent;
-    private Slot[] slots;
+    private DefaultSlot[] slots;
     private CloseHandler handler;
+    private Set<MenuHolder> viewers = new HashSet<>();
 
-    protected AbstractMenu(String title, int slots, Menu parent) {
+    // Bukkit Inventory information
+    protected String inventoryTitle;
+    protected int inventorySlots;
+    protected InventoryType inventoryType;
+
+    protected AbstractMenu(String title, int inventorySlots, Menu parent) {
         if (title == null) {
             title = InventoryType.CHEST.getDefaultTitle();
         }
-        this.inventory = Bukkit.createInventory(this, slots, title);
+        this.inventoryTitle = title;
+        this.inventorySlots = inventorySlots;
         this.parent = parent;
-        generateSlots();
+        this.generateSlots();
     }
     
     protected AbstractMenu(String title, InventoryType type, Menu parent) {
@@ -61,18 +71,19 @@ public abstract class AbstractMenu implements Menu  {
         if (title == null) {
             title = type.getDefaultTitle();
         }
-        this.inventory = Bukkit.createInventory(this, type, title);
+        this.inventoryTitle = title;
+        this.inventoryType = type;
         this.parent = parent;
-        generateSlots();
+        this.generateSlots();
     }
 
     /**
      * Initial method called to fill the Slots of the menu
      */
     protected void generateSlots() {
-        this.slots = new Slot[inventory.getSize()];
+        this.slots = new DefaultSlot[getDimensions().getArea()];
         for (int i = 0 ; i < slots.length ; i++) {
-            slots[i] = new DefaultSlot(inventory, i);
+            this.slots[i] = new DefaultSlot(this, i);
         }
     }
 
@@ -83,16 +94,74 @@ public abstract class AbstractMenu implements Menu  {
 
     @Override
     public void open(Player viewer) {
-        viewer.openInventory(getInventory());
+        InventoryHolder currentInventory =
+                viewer.getOpenInventory().getTopInventory().getHolder();
+        if (currentInventory instanceof MenuHolder) {
+            MenuHolder holder = (MenuHolder) currentInventory;
+            Menu open = holder.getMenu();
+
+            if (open == this) {
+                return;
+            }
+
+            holder.setMenu(this);
+
+            // If the dimensions of the inventories differ, then we must render a new
+            // inventory for the target player.
+            if (!open.getDimensions().equals(getDimensions())) {
+                Inventory inventory = createInventory(holder);
+                holder.setInventory(inventory);
+                updateInventoryContents(viewer, inventory);
+                viewer.openInventory(inventory);
+            } else {
+                updateInventoryContents(viewer, holder.getInventory());
+            }
+        } else {
+            // Create new MenuHolder for the player
+            MenuHolder holder = new MenuHolder(this);
+            Inventory inventory = createInventory(holder);
+            updateInventoryContents(viewer, inventory);
+            holder.setInventory(inventory);
+            viewer.openInventory(inventory);
+            viewers.add(holder);
+        }
+    }
+
+    private Inventory createInventory(InventoryHolder holder) {
+        return inventoryType == null
+                ? Bukkit.createInventory(holder, inventorySlots, inventoryTitle)
+                : Bukkit.createInventory(holder, inventoryType, inventoryTitle);
+    }
+
+    private void updateInventoryContents(Player viewer, Inventory inventory) {
+        for (Slot slot : slots) {
+            inventory.setItem(slot.getIndex(), slot.getItem());
+        }
+        viewer.updateInventory();
     }
 
     @Override
     public void close(Player viewer) {
-        Inventory inv = getInventory();
-        if (!inv.getViewers().contains(viewer)) {
-            throw new IllegalStateException("menu not open for player");
-        }
+        closedByPlayer(viewer);
         viewer.closeInventory();
+    }
+
+    public void closedByPlayer(Player viewer) {
+        InventoryHolder currentInventory =
+                viewer.getOpenInventory().getTopInventory().getHolder();
+
+        if (!(currentInventory instanceof MenuHolder)
+                || !viewers.contains(currentInventory)) {
+            throw new IllegalStateException(viewer.getName() + " is not viewing this menu");
+        }
+
+        MenuHolder holder = (MenuHolder) currentInventory;
+        viewers.remove(holder);
+        getCloseHandler().ifPresent(h -> h.close(viewer, this));
+    }
+
+    public Set<MenuHolder> getViewers() {
+        return Collections.unmodifiableSet(viewers);
     }
 
     @Override
@@ -116,11 +185,6 @@ public abstract class AbstractMenu implements Menu  {
     public void clear(int index) {
         Slot slot = getSlot(index);
         slot.setItem(null);
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return inventory;
     }
 
     @Override

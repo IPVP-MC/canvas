@@ -44,6 +44,8 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.slot.ClickOptions;
 import org.ipvp.canvas.slot.Slot;
+import org.ipvp.canvas.type.AbstractMenu;
+import org.ipvp.canvas.type.MenuHolder;
 
 /**
  * A listener that maintains the required functions of Menus.
@@ -59,8 +61,8 @@ public final class MenuFunctionListener implements Listener {
         Inventory top = view.getTopInventory();
         
         // We are only processing drags that affect menus
-        if (top.getHolder() instanceof Menu) {
-            Menu menu = (Menu) top.getHolder();
+        if (top.getHolder() instanceof MenuHolder) {
+            Menu menu = ((MenuHolder) top.getHolder()).getMenu();
             ClickType clickType = event.getType() == DragType.EVEN ? ClickType.LEFT : ClickType.RIGHT;
             
             // Go through each slot affected and the item being inserted and pass the 
@@ -90,8 +92,8 @@ public final class MenuFunctionListener implements Listener {
         Inventory top = view.getTopInventory();
 
         // We are only processing clicks taking place in the view of a menu
-        if (top.getHolder() instanceof Menu) {
-            Menu menu = (Menu) top.getHolder();
+        if (top.getHolder() instanceof MenuHolder) {
+            Menu menu = ((MenuHolder) top.getHolder()).getMenu();
             Inventory clicked = event.getClickedInventory();
             InventoryAction action = event.getAction();
             
@@ -184,7 +186,6 @@ public final class MenuFunctionListener implements Listener {
                         passClickToSlot(event, event.getAction(), event.getClick(), event.getClickedInventory(), menu, nextAvailableSlot, adding);
                         nextAvailableSlot = getNextAvailableSlot(top, moving, nextAvailableSlot + 1);
                     }
-                    
                     break;
             }
         }
@@ -218,9 +219,7 @@ public final class MenuFunctionListener implements Listener {
     // Handles events where a slot was clicked inside an inventory
     private void passClickToSlot(InventoryInteractEvent handle, InventoryAction inventoryAction, ClickType clickType, 
                                  Inventory clicked, Menu menu, int slotIndex) {
-
-
-        passClickToSlot(handle, inventoryAction, clickType, clicked, menu, slotIndex, null); // TODO
+        passClickToSlot(handle, inventoryAction, clickType, clicked, menu, slotIndex, null);
     }
 
     // Handles events where a slot was clicked inside an inventory
@@ -254,7 +253,7 @@ public final class MenuFunctionListener implements Listener {
         // If the player is shift clicking an item into a disallowed inventory type 
         // we disallow it because certain custom inventories shoot off a 
         // StackOverflowError when this event is allowed to process.
-        if (top.getHolder() instanceof Menu && isShiftClickingBlocked(top.getType())
+        if (top.getHolder() instanceof MenuHolder && isShiftClickingBlocked(top.getType())
                 && event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
             event.setCancelled(true);
         }
@@ -276,12 +275,12 @@ public final class MenuFunctionListener implements Listener {
     @EventHandler
     public void triggerCloseHandler(InventoryCloseEvent event) {
         Inventory closed = event.getInventory();
-        
+
         // If the player is closing a menu that has a close handler,
         // we trigger the handler for functions to run
-        if (closed.getHolder() instanceof Menu) {
-            Menu menu = (Menu) closed.getHolder();
-            menu.getCloseHandler().ifPresent(h -> h.close((Player) event.getPlayer(), menu));
+        if (closed.getHolder() instanceof MenuHolder) {
+            Menu menu = ((MenuHolder) closed.getHolder()).getMenu();
+            ((AbstractMenu) menu).closedByPlayer((Player) event.getPlayer());
         }
     }
 }
