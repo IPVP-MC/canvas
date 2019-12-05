@@ -104,18 +104,13 @@ public abstract class AbstractMenu implements Menu  {
                 return;
             }
 
+            open.close(viewer);
             holder.setMenu(this);
-
-            // If the dimensions of the inventories differ, then we must render a new
-            // inventory for the target player.
-            if (!open.getDimensions().equals(getDimensions())) {
-                Inventory inventory = createInventory(holder);
-                holder.setInventory(inventory);
-                updateInventoryContents(viewer, inventory);
-                viewer.openInventory(inventory);
-            } else {
-                updateInventoryContents(viewer, holder.getInventory());
-            }
+            Inventory inventory = createInventory(holder);
+            holder.setInventory(inventory);
+            updateInventoryContents(viewer, inventory);
+            viewer.openInventory(inventory);
+            viewers.add(holder);
         } else {
             // Create new MenuHolder for the player
             MenuHolder holder = new MenuHolder(this);
@@ -152,7 +147,7 @@ public abstract class AbstractMenu implements Menu  {
 
         if (!(currentInventory instanceof MenuHolder)
                 || !viewers.contains(currentInventory)) {
-            throw new IllegalStateException(viewer.getName() + " is not viewing this menu");
+            return;
         }
 
         MenuHolder holder = (MenuHolder) currentInventory;
