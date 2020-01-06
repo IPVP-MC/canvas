@@ -31,8 +31,8 @@ import org.ipvp.canvas.Menu;
  */
 public class HopperMenu extends AbstractMenu {
 
-    protected HopperMenu(String title, Menu menu) {
-        super(title, InventoryType.HOPPER, menu);
+    protected HopperMenu(String title, Menu menu, boolean redraw) {
+        super(title, InventoryType.HOPPER, menu, redraw);
     }
 
     /**
@@ -54,7 +54,7 @@ public class HopperMenu extends AbstractMenu {
 
         @Override
         public HopperMenu build() {
-            return new HopperMenu(getTitle(), getParent());
+            return new HopperMenu(getTitle(), getParent(), isRedraw());
         }
     }
 }

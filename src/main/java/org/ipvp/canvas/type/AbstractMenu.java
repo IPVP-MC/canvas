@@ -47,6 +47,7 @@ import org.ipvp.canvas.slot.Slot;
 public abstract class AbstractMenu implements Menu  {
 
     private Menu parent;
+    private boolean redraw;
     private DefaultSlot[] slots;
     private CloseHandler handler;
     private Set<MenuHolder> viewers = new HashSet<>();
@@ -56,17 +57,18 @@ public abstract class AbstractMenu implements Menu  {
     protected int inventorySlots;
     protected InventoryType inventoryType;
 
-    protected AbstractMenu(String title, int inventorySlots, Menu parent) {
+    protected AbstractMenu(String title, int inventorySlots, Menu parent, boolean redraw) {
         if (title == null) {
             title = InventoryType.CHEST.getDefaultTitle();
         }
         this.inventoryTitle = title;
         this.inventorySlots = inventorySlots;
         this.parent = parent;
+        this.redraw = redraw;
         this.generateSlots();
     }
     
-    protected AbstractMenu(String title, InventoryType type, Menu parent) {
+    protected AbstractMenu(String title, InventoryType type, Menu parent, boolean redraw) {
         Objects.requireNonNull(type, "type cannot be null");
         if (title == null) {
             title = type.getDefaultTitle();
@@ -74,6 +76,7 @@ public abstract class AbstractMenu implements Menu  {
         this.inventoryTitle = title;
         this.inventoryType = type;
         this.parent = parent;
+        this.redraw = redraw;
         this.generateSlots();
     }
 
@@ -93,6 +96,11 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
+    public boolean isRedraw() {
+        return redraw;
+    }
+
+    @Override
     public void open(Player viewer) {
         InventoryHolder currentInventory =
                 viewer.getOpenInventory().getTopInventory().getHolder();
@@ -104,12 +112,20 @@ public abstract class AbstractMenu implements Menu  {
                 return;
             }
 
-            open.close(viewer);
-            holder.setMenu(this);
-            Inventory inventory = createInventory(holder);
-            holder.setInventory(inventory);
+            Inventory inventory;
+
+            if (isRedraw() && open.getDimensions().equals(getDimensions())) {
+                inventory = holder.getInventory();
+                ((AbstractMenu) open).closedByPlayer(viewer, false);
+            } else {
+                open.close(viewer);
+                inventory = createInventory(holder);
+                holder.setInventory(inventory);
+                viewer.openInventory(inventory);
+            }
+
             updateInventoryContents(viewer, inventory);
-            viewer.openInventory(inventory);
+            holder.setMenu(this);
             viewers.add(holder);
         } else {
             // Create new MenuHolder for the player
@@ -137,11 +153,11 @@ public abstract class AbstractMenu implements Menu  {
 
     @Override
     public void close(Player viewer) {
-        closedByPlayer(viewer);
+        closedByPlayer(viewer, true);
         viewer.closeInventory();
     }
 
-    public void closedByPlayer(Player viewer) {
+    public void closedByPlayer(Player viewer, boolean triggerCloseHandler) {
         InventoryHolder currentInventory =
                 viewer.getOpenInventory().getTopInventory().getHolder();
 
@@ -152,7 +168,9 @@ public abstract class AbstractMenu implements Menu  {
 
         MenuHolder holder = (MenuHolder) currentInventory;
         viewers.remove(holder);
-        getCloseHandler().ifPresent(h -> h.close(viewer, this));
+        if (triggerCloseHandler) {
+            getCloseHandler().ifPresent(h -> h.close(viewer, this));
+        }
     }
 
     public Set<MenuHolder> getViewers() {
@@ -202,6 +220,7 @@ public abstract class AbstractMenu implements Menu  {
         
         private String title;
         private Menu parent;
+        private boolean redraw;
 
         @Override
         public Menu.Builder title(String title) {
@@ -215,12 +234,22 @@ public abstract class AbstractMenu implements Menu  {
             return this;
         }
 
+        @Override
+        public Menu.Builder redraw(boolean redraw) {
+            this.redraw = redraw;
+            return this;
+        }
+
         public String getTitle() {
             return title;
         }
 
         public Menu getParent() {
             return parent;
+        }
+
+        public boolean isRedraw() {
+            return redraw;
         }
     }
 }

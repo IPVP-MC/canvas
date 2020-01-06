@@ -47,6 +47,21 @@ public interface Menu extends Iterable<Slot> {
     Optional<Menu> getParent();
 
     /**
+     * Returns whether this menu will redraw.
+     *
+     * <p>If a player has an existing menu open and the
+     * dimensions of the open inventory are the same as
+     * this menu, then the contents of this menu will
+     * be applied to the current inventory to preserve
+     * cursor location.
+     *
+     * <p>Note: This feature cannot redraw the name of
+     *
+     * @return
+     */
+    boolean isRedraw();
+
+    /**
      * Opens the Menu for a Player
      *
      * @param viewer The player to view the Menu
@@ -139,6 +154,15 @@ public interface Menu extends Iterable<Slot> {
          * @return Fluent pattern
          */
         Builder parent(Menu parent);
+
+        /**
+         * Sets the redraw flag of this Menu.
+         *
+         * @param redraw redraw flag
+         * @return Fluent pattern
+         * @see #isRedraw()
+         */
+        Builder redraw(boolean redraw);
 
         /**
          * Builds the Menu from the given data

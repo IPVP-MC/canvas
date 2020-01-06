@@ -280,7 +280,7 @@ public final class MenuFunctionListener implements Listener {
         // we trigger the handler for functions to run
         if (closed.getHolder() instanceof MenuHolder) {
             Menu menu = ((MenuHolder) closed.getHolder()).getMenu();
-            ((AbstractMenu) menu).closedByPlayer((Player) event.getPlayer());
+            ((AbstractMenu) menu).closedByPlayer((Player) event.getPlayer(), true);
         }
     }
 }

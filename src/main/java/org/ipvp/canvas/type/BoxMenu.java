@@ -36,8 +36,8 @@ import org.ipvp.canvas.Menu;
  */
 public class BoxMenu extends AbstractMenu {
 
-    protected BoxMenu(String title, InventoryType type, Menu menu) {
-        super(title, type, menu);
+    protected BoxMenu(String title, InventoryType type, Menu menu, boolean redraw) {
+        super(title, type, menu, redraw);
     }
 
     /**
@@ -77,7 +77,7 @@ public class BoxMenu extends AbstractMenu {
 
         @Override
         public BoxMenu build() {
-            return new BoxMenu(getTitle(), type, getParent());
+            return new BoxMenu(getTitle(), type, getParent(), isRedraw());
         }
     }
 }

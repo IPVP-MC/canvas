@@ -30,8 +30,8 @@ import org.ipvp.canvas.Menu;
  */
 public class ChestMenu extends AbstractMenu {
 
-    protected ChestMenu(String title, int slots, Menu menu) {
-        super(title, slots, menu);
+    protected ChestMenu(String title, int slots, Menu menu, boolean redraw) {
+        super(title, slots, menu, redraw);
     }
 
     /**
@@ -65,7 +65,7 @@ public class ChestMenu extends AbstractMenu {
 
         @Override
         public ChestMenu build() {
-            return new ChestMenu(getTitle(), size, getParent());
+            return new ChestMenu(getTitle(), size, getParent(), isRedraw());
         }
     }
 }
