@@ -24,11 +24,9 @@
 package org.ipvp.canvas;
 
 import java.util.Optional;
-import java.util.Set;
 
 import org.bukkit.entity.Player;
 import org.ipvp.canvas.slot.Slot;
-import org.ipvp.canvas.type.MenuHolder;
 
 /**
  * A menu represents an interactive interface for Players backed by instances of 
@@ -62,6 +60,14 @@ public interface Menu extends Iterable<Slot> {
     boolean isRedraw();
 
     /**
+     * Returns whether the player currently has this menu open.
+     *
+     * @param viewer Player
+     * @return true if the player has this menu open, false otherwise
+     */
+    boolean isOpen(Player viewer);
+
+    /**
      * Opens the Menu for a Player
      *
      * @param viewer The player to view the Menu
@@ -75,6 +81,18 @@ public interface Menu extends Iterable<Slot> {
      * @throws IllegalStateException If the Player is not viewing the Menu
      */
     void close(Player viewer) throws IllegalStateException;
+
+    /**
+     * Re-renders the menu for the player.
+     *
+     * <p>If any items have changed in the inventory and a
+     * {@link Slot} has a non-null item then any changes
+     * for that slot will be overwritten.
+     *
+     * @param viewer player viewing inventory
+     * @throws IllegalStateException If player is not viewing the menu
+     */
+    void update(Player viewer) throws IllegalStateException;
 
     /**
      * Returns the Slot found at the given index of the Menu

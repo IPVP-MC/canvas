@@ -1,10 +1,11 @@
 # canvas [![Build Status](https://travis-ci.org/IPVP-MC/canvas.svg?branch=master)](https://travis-ci.org/IPVP-MC/canvas)
 
-A highly advanced, intelligent, and effective inventory management library for Bukkit plugins. The primary goal of canvas is to enable creation of elegant inventory systems without the quirks of existing libraries.
+A highly advanced and effective inventory management library for Bukkit plugins. The primary goal of canvas is to enable creation of elegant inventory systems without the quirks of existing libraries.
 
 ## Feature Overview
 * [Menus](#menus) - the basics of GUI creation
 * [Slots](#slots) - controlling what GUI slots do
+* [Templates](#templates) - rendering non-static items on a per-player basis
 * [Masks](#masks) - inventory slot IDs made easy!
 
 ## Using canvas
@@ -83,13 +84,26 @@ public void addCloseHandler(Menu menu) {
 }
 ```
 
+#### Redrawing
+When switching between different Menus for players, by default the cursor will reset to the middle of the screen. 
+This behavior can be changed to preserve cursor location at the cost of not being able to update Menu titles by enabling
+the `redraw` property of a Menu. When building a Menu via `MenuBuilder`, passing a value of `true` to `MenuBuilder#redraw(boolean)` 
+enabled this functionality.
+
+**Note**: If switching to a menu that has different dimensions, the `redraw` flag will be ignored and a new Inventory will
+be opened for the player, resetting their cursor.
+
 ### Slots
-A [Slot](src/main/java/org/ipvp/canvas/slot/Slot.java) is exactly what you'd expect it to be, however canvas allows incredible customization of what they can do. Menus grant access to their slots by through the `Menu#getSlot(int)` method.
+A [Slot](src/main/java/org/ipvp/canvas/slot/Slot.java) is exactly what you'd expect it to be, however canvas allows 
+incredible customization of what they can do. Menus grant access to their slots through the `Menu#getSlot(int)` method.
 
 There are 3 major pieces to Slot functionality:
 * [ClickOptions](src/main/java/org/ipvp/canvas/slot/ClickOptions.java)
 * [ClickInformation](src/main/java/org/ipvp/canvas/ClickInformation.java)
 * [ClickHandler](src/main/java/org/ipvp/canvas/slot/Slot.java)
+
+Additionally, Slots grant the ability to render non-static items within their parent Menu via 
+[ItemStackTemplate](src/main/java/org/ipvp/canvas/template/ItemStackTemplate.java) (see below).
 
 #### ClickOptions
 Click options are the primary method of controlling what actions and click types can be performed on the raw item contents of the holding inventory. Two basic sets are provided with the library, which are `ClickOptions.ALLOW_ALL` and `ClickOptions.DENY_ALL`. By default, slots carry the DENY_ALL trait, denying all pickup and dropping off of items in the respective inventory. These behaviors are easily modified with the `Slot#setClickOptions(ClickOptions)` method.
@@ -122,6 +136,31 @@ public void addClickHandler(Slot slot) {
     });
 }
 ```
+
+### Templates
+Item templates are used to render non-static items on a per-player basis. In certain situations, users of canvas may
+require a Menu to be updated because state has changed. For example, if an icon in a Menu displays the level of a player
+and the player has levelled up then the icon must be redrawn to reflect the changes. Item templates allow this functionality
+to happen without requiring a completely new Menu for each player.
+
+Item templates are assigned to slots via the `Slot#setItemTemplate(ItemStackTemplate)` method. Alternatively,  
+`Slot#setItem(ItemStack)` can be used to set a static item that will render the same for every player.
+
+Using the scenario above, where a player may be levelling up, code for an item may look something like the following:
+```java
+Menu menu = ChestMenu.builder(1).title("Level").build();
+Slot slot = menu.getSlot(4);
+slot.setItemTemplate(p -> {
+    int level = p.getLevel();
+    ItemStack item = new ItemStack(Material.EXP_BOTTLE);
+    ItemMeta itemMeta = item.getItemMeta();
+    itemMeta.setDisplayName("Level: " + level);
+    item.setItemMeta(itemMeta);
+    return item;
+});
+```
+With the item template set in place, every time the Menu is updated for the player using `Menu.update(Player)`, the EXP bottle 
+will be updated with the players current level and will be rendered in the inventory the player has open. 
 
 ### Masks
 Masks create a layer of abstraction over raw inventory slot IDs. Through the usage of masks, populating specific slots inside an inventory has never been easier. Let's start with an example.

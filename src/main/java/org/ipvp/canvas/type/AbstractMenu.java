@@ -129,7 +129,7 @@ public abstract class AbstractMenu implements Menu  {
             viewers.add(holder);
         } else {
             // Create new MenuHolder for the player
-            MenuHolder holder = new MenuHolder(this);
+            MenuHolder holder = new MenuHolder(viewer, this);
             Inventory inventory = createInventory(holder);
             updateInventoryContents(viewer, inventory);
             holder.setInventory(inventory);
@@ -146,15 +146,32 @@ public abstract class AbstractMenu implements Menu  {
 
     private void updateInventoryContents(Player viewer, Inventory inventory) {
         for (Slot slot : slots) {
-            inventory.setItem(slot.getIndex(), slot.getItem());
+            inventory.setItem(slot.getIndex(), slot.getItem(viewer));
         }
         viewer.updateInventory();
+    }
+
+    @Override
+    public boolean isOpen(Player viewer) {
+        InventoryHolder currentInventory =
+                viewer.getOpenInventory().getTopInventory().getHolder();
+        return currentInventory instanceof MenuHolder && viewers.contains(currentInventory);
     }
 
     @Override
     public void close(Player viewer) {
         closedByPlayer(viewer, true);
         viewer.closeInventory();
+    }
+
+    @Override
+    public void update(Player viewer) throws IllegalStateException {
+        if (!isOpen(viewer)) {
+            return;
+        }
+
+        InventoryHolder openInventory = viewer.getOpenInventory().getTopInventory().getHolder();
+        updateInventoryContents(viewer, openInventory.getInventory());
     }
 
     public void closedByPlayer(Player viewer, boolean triggerCloseHandler) {

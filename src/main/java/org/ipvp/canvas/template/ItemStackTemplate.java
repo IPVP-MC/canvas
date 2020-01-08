@@ -21,51 +21,22 @@
  * SOFTWARE.
  */
 
-package org.ipvp.canvas.type;
+package org.ipvp.canvas.template;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.ipvp.canvas.Menu;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.Objects;
+/**
+ * An item that can be re-rendered as needed for specific players.
+ */
+@FunctionalInterface
+public interface ItemStackTemplate {
 
-public class MenuHolder implements InventoryHolder {
-
-    private Player viewer;
-    private Menu menu;
-    private Inventory inventory;
-
-    MenuHolder(Player viewer, Menu menu) {
-        this(viewer, menu, null);
-    }
-
-    MenuHolder(Player viewer, Menu menu, Inventory inventory) {
-        this.viewer = viewer;
-        this.menu = menu;
-        this.inventory = inventory;
-    }
-
-    public Player getViewer() {
-        return viewer;
-    }
-
-    public Menu getMenu() {
-        return menu;
-    }
-
-    void setMenu(Menu menu) {
-        Objects.requireNonNull(menu);
-        this.menu = menu;
-    }
-
-    @Override
-    public Inventory getInventory() {
-        return inventory;
-    }
-
-    void setInventory(Inventory inventory) {
-        Objects.requireNonNull(inventory);
-        this.inventory = inventory;
-    }
+    /**
+     * Gets the item for a player.
+     *
+     * @param player player
+     * @return current item the player can see
+     */
+    ItemStack getItem(Player player);
 }

@@ -21,51 +21,48 @@
  * SOFTWARE.
  */
 
-package org.ipvp.canvas.type;
+package org.ipvp.canvas.template;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.ipvp.canvas.Menu;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
 
-public class MenuHolder implements InventoryHolder {
+/**
+ * An itemstack template that will always return the same item.
+ */
+public class StaticItemTemplate implements ItemStackTemplate {
 
-    private Player viewer;
-    private Menu menu;
-    private Inventory inventory;
+    private final ItemStack item;
 
-    MenuHolder(Player viewer, Menu menu) {
-        this(viewer, menu, null);
+    public StaticItemTemplate(ItemStack item) {
+        this.item = item;
     }
 
-    MenuHolder(Player viewer, Menu menu, Inventory inventory) {
-        this.viewer = viewer;
-        this.menu = menu;
-        this.inventory = inventory;
-    }
-
-    public Player getViewer() {
-        return viewer;
-    }
-
-    public Menu getMenu() {
-        return menu;
-    }
-
-    void setMenu(Menu menu) {
-        Objects.requireNonNull(menu);
-        this.menu = menu;
+    /**
+     * Gets the item contained by this static template.
+     *
+     * @return item
+     */
+    public ItemStack getItem() {
+        return item == null ? null : new ItemStack(item);
     }
 
     @Override
-    public Inventory getInventory() {
-        return inventory;
+    public ItemStack getItem(Player player) {
+        return getItem();
     }
 
-    void setInventory(Inventory inventory) {
-        Objects.requireNonNull(inventory);
-        this.inventory = inventory;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StaticItemTemplate that = (StaticItemTemplate) o;
+        return Objects.equals(item, that.item);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(item);
     }
 }

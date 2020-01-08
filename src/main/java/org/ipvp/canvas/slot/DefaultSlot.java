@@ -26,9 +26,12 @@ package org.ipvp.canvas.slot;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.ipvp.canvas.template.ItemStackTemplate;
+import org.ipvp.canvas.template.StaticItemTemplate;
 import org.ipvp.canvas.type.AbstractMenu;
-import org.ipvp.canvas.type.MenuHolder;
 
 /**
  * A slot defined for default use by all Menus defined by this library.
@@ -37,7 +40,7 @@ public class DefaultSlot implements Slot {
 
     private final AbstractMenu handle;
     private final int index;
-    private ItemStack item;
+    private ItemStackTemplate item;
     private ClickOptions options;
     private ClickHandler handler;
     
@@ -75,14 +78,29 @@ public class DefaultSlot implements Slot {
 
     @Override
     public ItemStack getItem() {
-        return this.item;
+        if (item instanceof StaticItemTemplate) {
+            return ((StaticItemTemplate) item).getItem();
+        }
+        throw new UnsupportedOperationException("Cannot get item from template");
+    }
+
+    @Override
+    public ItemStack getItem(Player viewer) {
+        return item == null ? null : item.getItem(viewer);
     }
 
     @Override
     public void setItem(ItemStack item) {
-        this.item = item == null ? null : new ItemStack(item);
-        handle.getViewers().stream().map(MenuHolder::getInventory)
-                .forEach(i -> i.setItem(index, item));
+        setItemTemplate(new StaticItemTemplate(item));
+    }
+
+    @Override
+    public void setItemTemplate(ItemStackTemplate item) {
+        this.item = item;
+        handle.getViewers().forEach(v -> {
+            Inventory inventory = v.getInventory();
+            inventory.setItem(index, getItem(v.getViewer()));
+        });
     }
 
     @Override

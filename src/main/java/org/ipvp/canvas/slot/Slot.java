@@ -28,6 +28,7 @@ import java.util.Optional;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.ClickInformation;
+import org.ipvp.canvas.template.ItemStackTemplate;
 
 /**
  * A slot is a position held by an Inventory that can be interacted with by users.
@@ -63,8 +64,19 @@ public interface Slot {
      * has undefined behavior when the stack is of type AIR.
      *
      * @return The item in the slot
+     * @deprecated superseded by {@link #getItem(Player)}
      */
+    @Deprecated
     ItemStack getItem();
+
+    /**
+     * Returns the item currently present in the slot, rendered
+     * for a specific player.
+     *
+     * @param viewer player viewing the menu/slot
+     * @return item rendered for the player
+     */
+    ItemStack getItem(Player viewer);
 
     /**
      * Sets the item currently in the slot.
@@ -72,6 +84,13 @@ public interface Slot {
      * @param item The new item in the slot
      */
     void setItem(ItemStack item);
+
+    /**
+     * Sets the item template to render in the slot.
+     *
+     * @param item New item template
+     */
+    void setItemTemplate(ItemStackTemplate item);
 
     /**
      * Returns a user-defined handler for when a Player clicks the slot.
