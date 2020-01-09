@@ -69,8 +69,17 @@ public class Mask2D implements Mask {
      * @return A mask builder conforming to the dimensions of the Menu
      */
     public static Builder builder(Menu menu) {
-        Menu.Dimension dimension = menu.getDimensions();
-        return new Builder(dimension.getRows(), dimension.getColumns());
+        return builder(menu.getDimensions());
+    }
+
+    /**
+     * Returns a new builder for specific dimensions
+     *
+     * @param dimension menu dimensions
+     * @return A mask builder for the specified number of rows and columns
+     */
+    public static Mask2D.Builder builder(Menu.Dimension dimension) {
+        return builder(dimension.getRows(), dimension.getColumns());
     }
 
     /**

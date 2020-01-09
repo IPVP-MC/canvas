@@ -93,6 +93,35 @@ enabled this functionality.
 **Note**: If switching to a menu that has different dimensions, the `redraw` flag will be ignored and a new Inventory will
 be opened for the player, resetting their cursor.
 
+#### Pagination
+Creating connected pages of Menus to display a catalog of items is made easy with the 
+[PaginatedMenuBuilder](src/main/java/org/ipvp/canvas/paginate/PaginatedMenuBuilder.java) class. The utility is able to be
+configured to set the proper previous page, next page, and any necessary functions for items that are added.
+
+In the basic example below, we create a simple menu displaying various static items.
+```java
+Menu.Builder pageTemplate = ChestMenu.builder(3).title("Items").redraw(true);
+Mask2D itemSlots = Mask2D.builder(pageTemplate.getDimensions())
+        .nextRow().apply("011111110").build();
+List<Menu> pages = PaginatedMenuBuilder.builder(pageTemplate)
+        .slots(itemSlots)
+        .nextButton(new ItemStack(Material.ARROW))
+        .nextButtonSlot(23)
+        .previousButton(new ItemStack(Material.ARROW))
+        .previousButtonSlot(21)
+        .addItem(new ItemStack(Material.DIRT))
+        .addItem(new ItemStack(Material.GRASS))
+        .addItem(new ItemStack(Material.COBBLESTONE))
+        .addItem(new ItemStack(Material.STONE))
+        // ...
+        .build();
+```
+Per-player items and click handlers are supported for added items as well, via the `PaginatedMenuBuilder.addItem(ItemStackTemplate)`
+or `PaginatedMenuBuilder.addItem(SlotSettings)` methods.
+
+If additional modifications need to be made to any newly created page that the builder doesn't support, adding functionality 
+to modify a freshly created page is available by adding a `Consumer<Menu>` with the `PaginatedMenuBuilder.newMenuModifier(Consumer<Menu>)` method.
+
 ### Slots
 A [Slot](src/main/java/org/ipvp/canvas/slot/Slot.java) is exactly what you'd expect it to be, however canvas allows 
 incredible customization of what they can do. Menus grant access to their slots through the `Menu#getSlot(int)` method.

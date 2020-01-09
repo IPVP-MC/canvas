@@ -107,6 +107,20 @@ public interface Slot {
     void setClickHandler(ClickHandler handler);
 
     /**
+     * Get the settings of the slot.
+     *
+     * @return slot settings
+     */
+    SlotSettings getSettings();
+
+    /**
+     * Set the settings of the slot.
+     *
+     * @param settings slot settings
+     */
+    void setSettings(SlotSettings settings);
+
+    /**
      * A Slots click handler is a user defined function or policy that occurs when a
      * Player clicks on a slot.
      * <p>

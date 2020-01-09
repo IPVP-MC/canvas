@@ -234,10 +234,20 @@ public abstract class AbstractMenu implements Menu  {
      * generate a new Menu with identical features to the ones created before it.
      */
     public static abstract class Builder implements Menu.Builder {
-        
+
+        private final Dimension dimensions;
         private String title;
         private Menu parent;
         private boolean redraw;
+
+        public Builder(Dimension dimensions) {
+            this.dimensions = dimensions;
+        }
+
+        @Override
+        public Dimension getDimensions() {
+            return dimensions;
+        }
 
         @Override
         public Menu.Builder title(String title) {

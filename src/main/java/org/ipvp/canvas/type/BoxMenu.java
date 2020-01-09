@@ -72,6 +72,7 @@ public class BoxMenu extends AbstractMenu {
         private InventoryType type;
 
         Builder(InventoryType type) {
+            super(new Dimension(3, 3));
             this.type = type;
         }
 

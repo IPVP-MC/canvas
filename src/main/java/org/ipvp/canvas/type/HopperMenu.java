@@ -52,6 +52,10 @@ public class HopperMenu extends AbstractMenu {
      */
     public static class Builder extends AbstractMenu.Builder {
 
+        public Builder() {
+            super(new Dimension(1, 5));
+        }
+
         @Override
         public HopperMenu build() {
             return new HopperMenu(getTitle(), getParent(), isRedraw());

@@ -158,6 +158,13 @@ public interface Menu extends Iterable<Slot> {
     interface Builder {
 
         /**
+         * Returns the dimensions of the Menu to be created.
+         *
+         * @return menu dimensions
+         */
+        Dimension getDimensions();
+
+        /**
          * Adds a title to this Menu
          *
          * @param title The title to display

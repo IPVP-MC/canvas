@@ -42,9 +42,9 @@ public class ChestMenu extends AbstractMenu {
      */
     public static Builder builder(int rows) {
         if (rows < 1 || rows > 6) {
-            throw new IllegalArgumentException("invalid row count");
+            throw new IllegalArgumentException("rows must be a value from 1 to 6");
         }
-        return new Builder(rows * 9);
+        return new Builder(rows);
     }
 
     @Override
@@ -57,15 +57,13 @@ public class ChestMenu extends AbstractMenu {
      */
     public static class Builder extends AbstractMenu.Builder {
 
-        private int size;
-
-        Builder(int size) {
-            this.size = size;
+        Builder(int rows) {
+            super(new Dimension(rows, 9));
         }
 
         @Override
         public ChestMenu build() {
-            return new ChestMenu(getTitle(), size, getParent(), isRedraw());
+            return new ChestMenu(getTitle(), getDimensions().getArea(), getParent(), isRedraw());
         }
     }
 }

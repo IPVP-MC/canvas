@@ -112,4 +112,18 @@ public class DefaultSlot implements Slot {
     public void setClickHandler(ClickHandler handler) {
         this.handler = handler;
     }
+
+    @Override
+    public SlotSettings getSettings() {
+        return new SlotSettings(options, handler, item);
+    }
+
+    @Override
+    public void setSettings(SlotSettings settings) {
+        setItemTemplate(settings.getItemTemplate());
+        setClickHandler(settings.getClickHandler());
+        if (settings.getClickOptions() != null) {
+            setClickOptions(settings.getClickOptions());
+        }
+    }
 }
