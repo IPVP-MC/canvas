@@ -95,12 +95,26 @@ public interface Menu extends Iterable<Slot> {
     void update(Player viewer) throws IllegalStateException;
 
     /**
-     * Returns the Slot found at the given index of the Menu
+     * Returns the Slot found at the given index of the Menu.
      *
      * @param index The index of the Slot
      * @return The Slot at the index
      */
     Slot getSlot(int index);
+
+    /**
+     * Returns the Slot found at the given row and column of the Menu.
+     *
+     * <p>Rows and columns are not 0-indexed and both start at 1. For instance,
+     * the very first slot of an inventory (slot 0, top left corner) is
+     * the slot in the first row and first column. The last slot in
+     * a double chest is the slot in the sixth row and ninth column.
+     *
+     * @param row menu row
+     * @param column menu column
+     * @return slot at coordinates
+     */
+    Slot getSlot(int row, int column);
 
     /**
      * Clears out the whole Menu

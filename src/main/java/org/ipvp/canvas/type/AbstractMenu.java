@@ -200,6 +200,14 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
+    public Slot getSlot(int row, int column) {
+        int columns = getDimensions().getColumns();
+        int firstRowIndex = (row - 1) * columns;
+        int index = firstRowIndex + column - 1;
+        return getSlot(index);
+    }
+
+    @Override
     public Iterator<Slot> iterator() {
         return new ArrayIterator<>(slots);
     }
