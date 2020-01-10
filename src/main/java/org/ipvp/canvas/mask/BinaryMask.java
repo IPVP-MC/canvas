@@ -23,7 +23,11 @@
 
 package org.ipvp.canvas.mask;
 
+import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.Menu;
+import org.ipvp.canvas.slot.Slot;
+import org.ipvp.canvas.template.ItemStackTemplate;
+import org.ipvp.canvas.template.StaticItemTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,10 +46,12 @@ public class BinaryMask implements Mask {
 
     private final Menu.Dimension dimension;
     private List<Integer> mask;
+    private ItemStackTemplate item;
 
-    BinaryMask(Menu.Dimension dimension, List<Integer> mask) {
+    BinaryMask(Menu.Dimension dimension, List<Integer> mask, ItemStackTemplate item) {
         this.dimension = dimension;
         this.mask = Collections.unmodifiableList(mask);
+        this.item = item;
     }
 
     @Override
@@ -69,6 +75,14 @@ public class BinaryMask implements Mask {
         int firstRowIndex = (row - 1) * columns;
         int index = firstRowIndex + column - 1;
         return contains(index);
+    }
+
+    @Override
+    public void apply(Menu menu) {
+        for (int slot : getSlots()) {
+            Slot affected = menu.getSlot(slot);
+            affected.setItemTemplate(item);
+        }
     }
 
     @Override
@@ -125,6 +139,7 @@ public class BinaryMask implements Mask {
         private Menu.Dimension dimensions;
         private int row;
         private int[][] mask;
+        private ItemStackTemplate item;
         
         BinaryMaskBuilder(Menu.Dimension dimensions) {
             this.dimensions = dimensions;
@@ -157,6 +172,29 @@ public class BinaryMask implements Mask {
                 throw new IllegalStateException("Row must be a value from 1 to " + rows());
             }
             this.row = row -1;
+            return this;
+        }
+
+        /**
+         * Sets the item that the mask will apply to an
+         * inventory.
+         *
+         * @param item item
+         * @return fluent pattern
+         */
+        public BinaryMaskBuilder item(ItemStack item) {
+            return item(item == null ? null : new StaticItemTemplate(item));
+        }
+
+        /**
+         * Sets the item that the mask will apply to an
+         * inventory.
+         *
+         * @param item item
+         * @return fluent pattern
+         */
+        public BinaryMaskBuilder item(ItemStackTemplate item) {
+            this.item = item;
             return this;
         }
 
@@ -199,7 +237,7 @@ public class BinaryMask implements Mask {
                     }
                 }
             }
-            return new BinaryMask(dimensions, slots);
+            return new BinaryMask(dimensions, slots, item);
         }
     }
 }

@@ -78,6 +78,13 @@ public interface Mask extends Iterable<Integer> {
     boolean contains(int row, int column);
 
     /**
+     * Applies the mask to a menu.
+     *
+     * @param menu target menu
+     */
+    void apply(Menu menu);
+
+    /**
      * @deprecated use {@link #contains(int)}
      */
     @Deprecated

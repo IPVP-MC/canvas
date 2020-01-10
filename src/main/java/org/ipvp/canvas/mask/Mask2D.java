@@ -68,6 +68,11 @@ public class Mask2D implements Mask {
     }
 
     @Override
+    public void apply(Menu menu) {
+
+    }
+
+    @Override
     public boolean test(int index) {
         return contains(index);
     }
