@@ -95,19 +95,32 @@ public interface Mask extends Iterable<Integer> {
     interface Builder {
 
         /**
-         * @return The current line that a pattern can be applied to 
+         * @return The current line that a pattern can be applied to
+         * @deprecated use #row()
          */
+        @Deprecated
         int currentLine();
 
         /**
          * @return The number of rows the pattern affects
+         * @deprecated
          */
+        @Deprecated
         int rows();
 
         /**
          * @return The number of columns the pattern affects
+         * @deprecated
          */
+        @Deprecated
         int columns();
+
+        /**
+         * Gets the current row a pattern will be applied to.
+         *
+         * @return row
+         */
+        int row();
 
         /**
          * Points the builder to a specific row to apply a mask to.

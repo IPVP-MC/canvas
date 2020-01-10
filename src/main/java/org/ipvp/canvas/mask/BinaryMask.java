@@ -23,23 +23,27 @@
 
 package org.ipvp.canvas.mask;
 
+import org.ipvp.canvas.Menu;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.ipvp.canvas.Menu;
-
 /**
- * @deprecated use {@link BinaryMask}
+ * A mask that only considers values {@code 0} and {@code 1} in the
+ * applied patterns.
+ *
+ * <p>Any character passed to the mask that is not explicitly {@code 1}
+ * is considered a false value and as a result the slot will not be
+ * contained by the resulting BinaryMask.
  */
-@Deprecated
-public class Mask2D implements Mask {
+public class BinaryMask implements Mask {
 
     private final Menu.Dimension dimension;
     private List<Integer> mask;
 
-    Mask2D(Menu.Dimension dimension, List<Integer> mask) {
+    BinaryMask(Menu.Dimension dimension, List<Integer> mask) {
         this.dimension = dimension;
         this.mask = Collections.unmodifiableList(mask);
     }
@@ -74,14 +78,7 @@ public class Mask2D implements Mask {
 
     @Override
     public boolean test(int row, int col) {
-        return test(row * 9 + col); // Differing logic from contains due to legacy compatibility
-    }
-
-    /**
-     * @return All indices affected by this mask
-     */
-    public List<Integer> getMask() {
-        return getSlots();
+        return contains(row, col);
     }
 
     @Override
@@ -91,124 +88,118 @@ public class Mask2D implements Mask {
 
     /**
      * Returns a new builder that matches the dimensions of a Menu
-     * 
-     * @param menu The menu to build a mask for
-     * @return A mask builder conforming to the dimensions of the Menu
+     *
+     * @param menu target menu
+     * @return mask builder for dimensions
      */
-    public static Builder builder(Menu menu) {
+    public static BinaryMaskBuilder builder(Menu menu) {
         return builder(menu.getDimensions());
     }
 
     /**
-     * Returns a new builder for specific dimensions
+     * Returns a new builder for specific dimensions.
      *
      * @param dimensions menu dimensions
-     * @return A mask builder for the specified number of rows and columns
+     * @return mask builder for dimensions
      */
-    public static Mask2D.Builder builder(Menu.Dimension dimensions) {
-        return new Builder(dimensions);
+    public static BinaryMaskBuilder builder(Menu.Dimension dimensions) {
+        return new BinaryMaskBuilder(dimensions);
     }
 
     /**
-     * Returns a new builder for specific dimensions
-     * 
-     * @param rows The amount of rows to cover
-     * @param cols The amount of columns to cover
-     * @return A mask builder for the specified number of rows and columns
+     * Returns a new builder for specific dimensions.
+     *
+     * @param rows row count of target menus
+     * @param cols column count of target menus
+     * @return mask builder for dimensions
      */
-    public static Mask2D.Builder builder(int rows, int cols) {
+    public static BinaryMaskBuilder builder(int rows, int cols) {
         return builder(new Menu.Dimension(rows, cols));
     }
 
     /**
      * A builder to create a Mask2D
      */
-    public static class Builder implements Mask.Builder {
+    public static class BinaryMaskBuilder implements Mask.Builder {
 
         private Menu.Dimension dimensions;
-        private int currentLine;
-        private int rows;
-        private int cols;
+        private int row;
         private int[][] mask;
         
-        public Builder(Menu.Dimension dimensions) {
+        BinaryMaskBuilder(Menu.Dimension dimensions) {
             this.dimensions = dimensions;
-            this.rows = dimensions.getRows();
-            this.cols = dimensions.getColumns();
-            this.mask = new int[rows][cols];            
+            this.mask = new int[dimensions.getRows()][dimensions.getColumns()];
         }
         
         @Override
         public int currentLine() {
-            return currentLine;
+            return row;
         }
 
         @Override
         public int rows() {
-            return rows;
+            return dimensions.getRows();
         }
         
         @Override
         public int columns() {
-            return cols;
+            return dimensions.getColumns();
         }
 
         @Override
         public int row() {
-            return currentLine;
+            return row;
         }
 
         @Override
-        public Builder row(int row) throws IllegalStateException {
-            if (row < 0 || row >= rows) {
-                throw new IllegalStateException("row not between 0 and " + rows());
+        public BinaryMaskBuilder row(int row) throws IllegalStateException {
+            if (row < 1 || row > dimensions.getRows()) {
+                throw new IllegalStateException("Row must be a value from 1 to " + rows());
             }
-            currentLine = row;
+            this.row = row -1;
             return this;
         }
 
         @Override
-        public Builder nextRow() throws IllegalStateException {
-            if (currentLine == mask.length){
-                throw new IllegalStateException("already at end");
+        public BinaryMaskBuilder nextRow() throws IllegalStateException {
+            if (row == mask.length){
+                throw new IllegalStateException("Current line is the last row");
             }
-            ++currentLine;
+            ++row;
             return this;
         }
 
         @Override
-        public Builder previousRow() throws IllegalStateException {
-            if (currentLine == 0) {
-                throw new IllegalStateException("already at start");
+        public BinaryMaskBuilder previousRow() throws IllegalStateException {
+            if (row == 0) {
+                throw new IllegalStateException("Current line is the first row");
             }
-            --currentLine;
+            --row;
             return this;
         }
 
         @Override
-        public Builder apply(String pattern) {
+        public BinaryMaskBuilder apply(String pattern) {
             char[] chars = pattern.toCharArray();
             for (int i = 0 ; i < 9 && i < chars.length ; i++) {
-                String ch = String.valueOf(chars[i]);
-                int c = Integer.parseInt(ch);
-                mask[currentLine][i] = Math.min(c, 1);
+                char c = chars[i];
+                mask[row][i] = c == '1' ? 1 : 0;
             }
             return this;
         }
 
         @Override
-        public Mask2D build() {
+        public BinaryMask build() {
             List<Integer> slots = new ArrayList<>();
-            for (int r = 0; r < mask.length ; r++) {
-                int[] col = mask[r];
-                for (int c = 0 ; c < col.length ; c++) {
-                    int state = col[c];
+            for (int r = 0; r < dimensions.getRows() ; r++) {
+                for (int c = 0 ; c < dimensions.getColumns() ; c++) {
+                    int state = mask[r][c];
                     if (state == 1) {
                         slots.add(r * columns() + c);
                     }
                 }
             }
-            return new Mask2D(dimensions, slots);
+            return new BinaryMask(dimensions, slots);
         }
     }
 }
