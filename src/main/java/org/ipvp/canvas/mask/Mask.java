@@ -25,7 +25,7 @@ package org.ipvp.canvas.mask;
 
 import org.ipvp.canvas.Menu;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * A basic inventory position mask.
@@ -43,7 +43,7 @@ public interface Mask extends Iterable<Integer> {
      *
      * @return affected slots
      */
-    List<Integer> getSlots();
+    Collection<Integer> getSlots();
 
     /**
      * Returns the dimensions that this mask is applicable for.
