@@ -24,37 +24,64 @@
 package org.ipvp.canvas.mask;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import org.ipvp.canvas.Menu;
 
 /**
- * 
+ * @deprecated use {@link BinaryMask}
  */
+@Deprecated
 public class Mask2D implements Mask {
 
+    private final Menu.Dimension dimension;
     private List<Integer> mask;
 
-    Mask2D(List<Integer> mask) {
-        this.mask = mask;
+    Mask2D(Menu.Dimension dimension, List<Integer> mask) {
+        this.dimension = dimension;
+        this.mask = Collections.unmodifiableList(mask);
     }
 
     @Override
-    public boolean test(int index) {
+    public List<Integer> getSlots() {
+        return mask;
+    }
+
+    @Override
+    public Menu.Dimension getDimensions() {
+        return dimension;
+    }
+
+    @Override
+    public boolean contains(int index) {
         return mask.contains(index);
     }
 
     @Override
+    public boolean contains(int row, int column) {
+        int columns = getDimensions().getColumns();
+        int firstRowIndex = (row - 1) * columns;
+        int index = firstRowIndex + column - 1;
+        return contains(index);
+    }
+
+    @Override
+    public boolean test(int index) {
+        return contains(index);
+    }
+
+    @Override
     public boolean test(int row, int col) {
-        return test(row * 9 + col);
+        return test(row * 9 + col); // Differing logic from contains due to legacy compatibility
     }
 
     /**
      * @return All indices affected by this mask
      */
     public List<Integer> getMask() {
-        return mask;
+        return getSlots();
     }
 
     @Override
@@ -75,11 +102,11 @@ public class Mask2D implements Mask {
     /**
      * Returns a new builder for specific dimensions
      *
-     * @param dimension menu dimensions
+     * @param dimensions menu dimensions
      * @return A mask builder for the specified number of rows and columns
      */
-    public static Mask2D.Builder builder(Menu.Dimension dimension) {
-        return builder(dimension.getRows(), dimension.getColumns());
+    public static Mask2D.Builder builder(Menu.Dimension dimensions) {
+        return new Builder(dimensions);
     }
 
     /**
@@ -90,7 +117,7 @@ public class Mask2D implements Mask {
      * @return A mask builder for the specified number of rows and columns
      */
     public static Mask2D.Builder builder(int rows, int cols) {
-        return new Builder(rows, cols);
+        return builder(new Menu.Dimension(rows, cols));
     }
 
     /**
@@ -98,14 +125,16 @@ public class Mask2D implements Mask {
      */
     public static class Builder implements Mask.Builder {
 
+        private Menu.Dimension dimensions;
         private int currentLine;
         private int rows;
         private int cols;
         private int[][] mask;
         
-        public Builder(int rows, int cols) {
-            this.rows = rows;
-            this.cols = cols;
+        public Builder(Menu.Dimension dimensions) {
+            this.dimensions = dimensions;
+            this.rows = dimensions.getRows();
+            this.cols = dimensions.getColumns();
             this.mask = new int[rows][cols];            
         }
         
@@ -174,7 +203,7 @@ public class Mask2D implements Mask {
                     }
                 }
             }
-            return new Mask2D(slots);
+            return new Mask2D(dimensions, slots);
         }
     }
 }

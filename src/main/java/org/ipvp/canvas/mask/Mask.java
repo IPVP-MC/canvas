@@ -23,6 +23,10 @@
 
 package org.ipvp.canvas.mask;
 
+import org.ipvp.canvas.Menu;
+
+import java.util.List;
+
 /**
  * A basic inventory position mask.
  * <p>
@@ -35,21 +39,54 @@ package org.ipvp.canvas.mask;
 public interface Mask extends Iterable<Integer> {
 
     /**
-     * Returns whether a slot index is covered by the mask
-     * 
-     * @param index The Inventory slot index
-     * @return True if the mask affects the slot
+     * Returns the slot indexes affected by the mask.
+     *
+     * @return affected slots
      */
+    List<Integer> getSlots();
+
+    /**
+     * Returns the dimensions that this mask is applicable for.
+     *
+     * <p>Note: Applying masks with non-matching dimensions
+     * is possible however may not yield the expected results
+     * if the column size is different.
+     *
+     * @return mask dimensions
+     */
+    Menu.Dimension getDimensions();
+
+    /**
+     * Returns whether the mask affects a certain index.
+     *
+     * @param index slot index
+     * @return whether the mask affects the slot
+     */
+    boolean contains(int index);
+
+    /**
+     *
+     * <p>Rows and columns are not 0-indexed and both start at 1. For instance,
+     * the very first slot of an inventory (slot 0, top left corner) is
+     * the slot in the first row and first column. The last slot in
+     * a double chest is the slot in the sixth row and ninth column.
+     *
+     * @param row row position
+     * @param column column position
+     * @return whether the mask affects the slot
+     */
+    boolean contains(int row, int column);
+
+    /**
+     * @deprecated use {@link #contains(int)}
+     */
+    @Deprecated
     boolean test(int index);
 
     /**
-     * Returns whether the slot at the given row and column is 
-     * covered by the mask
-     * 
-     * @param row The row of the slot
-     * @param col The column of the slot
-     * @return True if the mask affects the slot
+     * @deprecated use {@link #contains(int, int)}
      */
+    @Deprecated
     boolean test(int row, int col);
 
     /**
