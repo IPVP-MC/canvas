@@ -219,7 +219,7 @@ public class BinaryMask implements Mask {
         @Override
         public BinaryMaskBuilder apply(String pattern) {
             char[] chars = pattern.toCharArray();
-            for (int i = 0 ; i < 9 && i < chars.length ; i++) {
+            for (int i = 0 ; i < dimensions.getColumns() && i < chars.length ; i++) {
                 char c = chars[i];
                 mask[row][i] = c == '1' ? 1 : 0;
             }
