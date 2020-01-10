@@ -96,7 +96,7 @@ be opened for the player, resetting their cursor.
 #### Pagination
 Creating connected pages of Menus to display a catalog of items is made easy with the 
 [PaginatedMenuBuilder](src/main/java/org/ipvp/canvas/paginate/PaginatedMenuBuilder.java) class. The utility is able to be
-configured to set the proper previous page, next page, and any necessary functions for items that are added.
+configured to set the proper previous and next page icons, and any necessary functions for items that are added.
 
 In the basic example below, we create a simple menu displaying various static items.
 ```java
