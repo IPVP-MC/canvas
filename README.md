@@ -102,7 +102,7 @@ In the basic example below, we create a simple menu displaying various static it
 ```java
 Menu.Builder pageTemplate = ChestMenu.builder(3).title("Items").redraw(true);
 Mask2D itemSlots = Mask2D.builder(pageTemplate.getDimensions())
-        .nextRow().apply("011111110").build();
+        .pattern("011111110").build();
 List<Menu> pages = PaginatedMenuBuilder.builder(pageTemplate)
         .slots(itemSlots)
         .nextButton(new ItemStack(Material.ARROW))
@@ -198,7 +198,9 @@ Suppose we begin with the previously created menu:
 
 ![](http://i.imgur.com/LXnCkLv.png)
 
-If we wanted to create a basic border of white glass on the outer slots, we would normally have to figure out which values reference those slots. These 22 slot IDs are 0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35. If we didn't already store these values inside an `int[]` array, some general code might look something like this:
+If we wanted to create a basic border of white glass on the outer slots, we would normally have to figure out which 
+values reference those slots. These 22 slot IDs are 0, 1, 2, 3, 4, 5, 6, 7, 8, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 
+34, 35. If we didn't already store these values inside an `int[]` array, some general code might look something like this:
 
 ```java
 public void addWhiteBorder(Menu menu) {
@@ -214,24 +216,30 @@ public void addWhiteBorder(Menu menu) {
 }
 ```
 
-As you can see, the code is fairly unintuitive and not at all friendly for refactoring or bug fixing and it only gets worse as the inventory size grows or we want to add more slots. What if we _accidentally_ missed or forgot a slot id? Finding it would be a nuisance! For your benefit (or not) we've purposely excluded a single slot in the above example so that our inventory would have a gaping hole, feel free to see how long it would take to find the missing number.
+As you can see, the code is fairly unintuitive and not at all friendly for refactoring or bug fixing and it only gets 
+worse as the inventory size grows or we want to add more slots. What if we _accidentally_ missed or forgot a slot id? 
+Finding it would be a nuisance! For your benefit (or not) we've purposely excluded a single slot in the above example 
+so that our inventory would have a gaping hole, feel free to see how long it would take to find the missing number.
 
-Here is where Masks come in play. For the above inventory, masking the slots is made simple using a [Mask2D](src/main/java/org/ipvp/canvas/mask/Mask2D.java)
+Here is where Masks come in play. For the above inventory, masking the slots is made simple using a 
+[BinaryMask](src/main/java/org/ipvp/canvas/mask/BinaryMask.java).
 
 ```java
 public void addWhiteBorder(Inventory inventory) {
-    ItemStack glass = new ItemStack(Material.STAINED_GLASS_PANE);
-    Mask mask = Mask2D.builder(menu).apply("111111111") // First row
-                    .nextRow().apply("100000001") // Second row
-                    .nextRow().apply("100000001") // Third row
-                    .nextRow().apply("111111111").build(); // Fourth row
-    for (int slot : mask) {
-        menu.getSlot(slot).setItem(glass);
-    }
+    Mask mask = BinaryMask.builder(menu)
+                    .item(new ItemStack(Material.STAINED_GLASS_PANE))
+                    .pattern("111111111") // First row
+                    .pattern("100000001") // Second row
+                    .pattern("100000001") // Third row
+                    .pattern("111111111").build(); // Fourth row
+    mask.apply(menu);
 }
 ```
 
-Masks provide an incredibly simple interface for labelling slots. In the case of [Mask2D](src/main/java/org/ipvp/canvas/mask/Mask2D.java), each character represents a boolean value of whether or not the slot should be selected. A character value of '1' represents yes and all other characters the opposite. This model provides a semi-visual view of what the inventory will look like and is easy to add or remove specific slots.
+Masks provide an incredibly simple interface for labelling slots. In the case of 
+[BinaryMask](src/main/java/org/ipvp/canvas/mask/BinaryMask.java), each character represents a boolean value of whether or 
+not the slot should be selected. A character value of '1' represents yes and all other characters the opposite. 
+This model provides a semi-visual view of what the inventory will look like and is easy to add or remove specific slots.
 
 The final product we end up with is:
 
