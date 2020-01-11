@@ -247,6 +247,15 @@ public class RecipeMask implements Mask {
         }
 
         @Override
+        public Mask.Builder pattern(String pattern) {
+            apply(pattern);
+            if (row() != mask.length) {
+                nextRow();
+            }
+            return this;
+        }
+
+        @Override
         public RecipeMask build() {
             Map<Integer, Character> slots = new HashMap<>();
             for (int r = 0; r < dimensions.getRows() ; r++) {

@@ -143,7 +143,9 @@ public interface Mask extends Iterable<Integer> {
          * 
          * @return Fluent pattern
          * @throws IllegalStateException If the Builder is at the last line
+         * @deprecated superseded by {@link #row(int)}
          */
+        @Deprecated
         Builder nextRow();
 
         /**
@@ -151,23 +153,48 @@ public interface Mask extends Iterable<Integer> {
          * 
          * @return Fluent pattern
          * @throws IllegalStateException If the Builder is at the first line
+         * @deprecated superseded by {@link #row(int)}
          */
+        @Deprecated
         Builder previousRow() throws IllegalStateException;
 
         /**
-         * Applies a pattern to the line at the current index. 
-         * <p>
-         * If the string provided is too long, the pattern will be cut 
+         * Applies a pattern to the line at the current index.
+         *
+         * <p>If the string provided is too long, the pattern will be cut
          * off at the last possible slot index in the row. Each character
-         * of the pattern specifies a different function. Typically, a 
-         * character value of {@code '0'} defines that the mask will not 
-         * apply to the slot at the index, however this behavior is bound 
+         * of the pattern specifies a different function. Typically, a
+         * character value of {@code '0'} defines that the mask will not
+         * apply to the slot at the index, however this behavior is bound
          * to the implementation of the Builder.
-         *     
+         *
+         * <p>Note: Unlike {@link #pattern(String)}, this method does
+         * not skip to the next line and as such {@link #nextRow()} must
+         * be called after every application.
+         *
          * @param pattern A pattern to apply
          * @return Fluent pattern
+         * @deprecated superseded by {@link #pattern(String)}
          */
+        @Deprecated
         Builder apply(String pattern);
+
+        /**
+         * Applies a pattern to the line at the current index and moves
+         * to the next line.
+         * <p>
+         * If the string provided is too long, the pattern will be cut
+         * off at the last possible slot index in the row. Each character
+         * of the pattern specifies a different function. Typically, a
+         * character value of {@code '0'} defines that the mask will not
+         * apply to the slot at the index, however this behavior is bound
+         * to the implementation of the Builder.
+         *
+         * @param pattern A pattern to apply
+         * @return Fluent pattern
+         * @deprecated superseded by {@link #pattern(String)}
+         */
+        Builder pattern(String pattern);
 
         /**
          * Builds the Mask from the given data

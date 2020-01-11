@@ -202,6 +202,15 @@ public class Mask2D implements Mask {
         }
 
         @Override
+        public Mask.Builder pattern(String pattern) {
+            apply(pattern);
+            if (row() != mask.length) {
+                nextRow();
+            }
+            return this;
+        }
+
+        @Override
         public Mask2D build() {
             List<Integer> slots = new ArrayList<>();
             for (int r = 0; r < mask.length ; r++) {
