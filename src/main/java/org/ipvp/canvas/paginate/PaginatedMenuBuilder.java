@@ -25,7 +25,7 @@ package org.ipvp.canvas.paginate;
 
 import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.Menu;
-import org.ipvp.canvas.mask.Mask2D;
+import org.ipvp.canvas.mask.Mask;
 import org.ipvp.canvas.slot.Slot;
 import org.ipvp.canvas.slot.SlotSettings;
 import org.ipvp.canvas.template.ItemStackTemplate;
@@ -42,7 +42,7 @@ import java.util.function.Consumer;
 public class PaginatedMenuBuilder {
 
     private final Menu.Builder pageBuilder;
-    private Mask2D slots;
+    private Mask slots;
     private Consumer<Menu> newMenuModifier;
     private int previousButtonSlot = -1;
     private int nextButtonSlot = -1;
@@ -62,7 +62,7 @@ public class PaginatedMenuBuilder {
      * @param slots slot mask
      * @return fluent pattern
      */
-    public PaginatedMenuBuilder slots(Mask2D slots) {
+    public PaginatedMenuBuilder slots(Mask slots) {
         this.slots = slots;
         return this;
     }
@@ -97,7 +97,7 @@ public class PaginatedMenuBuilder {
      * @param previousButtonSlot slot mask
      * @return fluent pattern
      */
-    public PaginatedMenuBuilder previousButtonSlot(Mask2D previousButtonSlot) {
+    public PaginatedMenuBuilder previousButtonSlot(Mask previousButtonSlot) {
         return previousButtonSlot(indexFromMask(previousButtonSlot));
     }
 
@@ -120,13 +120,16 @@ public class PaginatedMenuBuilder {
      * @param nextButtonSlot slot mask
      * @return fluent pattern
      */
-    public PaginatedMenuBuilder nextButtonSlot(Mask2D nextButtonSlot) {
+    public PaginatedMenuBuilder nextButtonSlot(Mask nextButtonSlot) {
         return nextButtonSlot(indexFromMask(nextButtonSlot));
     }
 
     /* Helper method to get a slot index from a Mask2D */
-    private static int indexFromMask(Mask2D mask) {
-        return mask.getMask().size() > 0 ? mask.getMask().get(0) : -1;
+    private static int indexFromMask(Mask mask) {
+        if (mask.getSlots().isEmpty()) {
+            return -1;
+        }
+        return mask.getSlots().iterator().next();
     }
 
     /**
