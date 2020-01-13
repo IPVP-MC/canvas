@@ -32,29 +32,33 @@ import org.ipvp.canvas.template.ItemStackTemplate;
 import org.ipvp.canvas.template.StaticItemTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Fluent builder to assist with creating series of Menus.
  */
-public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder {
+public class MultiSectionPaginatedMenuBuilder extends AbstractPaginatedMenuBuilder {
 
-    private Mask slots;
-    private List<SlotSettings> items = new ArrayList<>();
+    private Map<Character, Mask> sectionSlots = new HashMap<>();
+    private Map<Character, List<SlotSettings>> sectionItems = new HashMap<>();
 
-    private PaginatedMenuBuilder(Menu.Builder pageBuilder) {
+    private MultiSectionPaginatedMenuBuilder(Menu.Builder pageBuilder) {
         super(pageBuilder);
     }
 
     /**
-     * Sets the slots where items can be inserted in each created Menu.
+     * Adds an item section where items can be inserted in
+     * created Menus.
      *
+     * @param character section identifier
      * @param slots slot mask
      * @return fluent pattern
      */
-    public PaginatedMenuBuilder slots(Mask slots) {
-        this.slots = slots;
+    public MultiSectionPaginatedMenuBuilder slots(char character, Mask slots) {
+        this.sectionSlots.put(character, slots);
         return this;
     }
 
@@ -64,8 +68,8 @@ public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder {
      * @param item item
      * @return fluent pattern
      */
-    public PaginatedMenuBuilder addItem(ItemStack item) {
-        return addItem(new StaticItemTemplate(item));
+    public MultiSectionPaginatedMenuBuilder addItem(char character, ItemStack item) {
+        return addItem(character, new StaticItemTemplate(item));
     }
 
     /**
@@ -74,8 +78,8 @@ public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder {
      * @param item item template
      * @return fluent pattern
      */
-    public PaginatedMenuBuilder addItem(ItemStackTemplate item) {
-        return addItem(SlotSettings.builder().itemTemplate(item).build());
+    public MultiSectionPaginatedMenuBuilder addItem(char character, ItemStackTemplate item) {
+        return addItem(character, SlotSettings.builder().itemTemplate(item).build());
     }
 
     /**
@@ -84,8 +88,9 @@ public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder {
      * @param item item slot details
      * @return fluent pattern
      */
-    public PaginatedMenuBuilder addItem(SlotSettings item) {
-        items.add(item);
+    public MultiSectionPaginatedMenuBuilder addItem(char character, SlotSettings item) {
+        List<SlotSettings> currentItems = sectionItems.compute(character, (k, v) -> v == null ? new ArrayList<>() : v);
+        currentItems.add(item);
         return this;
     }
 
@@ -96,44 +101,41 @@ public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder {
      */
     public List<Menu> build() {
         List<Menu> pages = new ArrayList<>();
-        List<SlotSettings> items = new ArrayList<>(this.items);
+        Map<Character, List<SlotSettings>> sectionItems = new HashMap<>();
+        this.sectionItems.forEach((c, l) -> sectionItems.put(c, new ArrayList<>(l))); // Deep clone
+
+        boolean requiresPage = false;
 
         do {
             Menu page = getPageBuilder().build();
             if (getNewMenuModifier() != null) {
                 getNewMenuModifier().accept(page);
             }
-            List<Integer> validSlots = getValidSlots(page);
             setPaginationIcon(page, getPreviousButtonSlot(), getPreviousButtonEmpty());
             setPaginationIcon(page, getNextButtonSlot(), getNextButtonEmpty());
-            Iterator<Integer> slotIterator = validSlots.iterator();
-            while (!items.isEmpty() && slotIterator.hasNext()) {
-                int slotIndex = slotIterator.next();
-                if (page.getDimensions().getArea() > slotIndex) {
-                    SlotSettings item = items.remove(0);
-                    Slot slot = page.getSlot(slotIndex);
-                    slot.setSettings(item);
+
+            for (Map.Entry<Character, List<SlotSettings>> entry : sectionItems.entrySet()) {
+                List<SlotSettings> items = entry.getValue();
+                Mask slots = sectionSlots.get(entry.getKey());
+                Iterator<Integer> slotIterator = slots.iterator();
+
+                while (!items.isEmpty() && slotIterator.hasNext()) {
+                    int slotIndex = slotIterator.next();
+                    if (slotIndex >= 0 && page.getDimensions().getArea() > slotIndex) {
+                        SlotSettings item = items.remove(0);
+                        Slot slot = page.getSlot(slotIndex);
+                        slot.setSettings(item);
+                    }
                 }
+
+                requiresPage = requiresPage || !items.isEmpty();
             }
 
             pages.add(page);
-        } while (!items.isEmpty());
+        } while (requiresPage);
 
         linkPages(pages);
         return pages;
-    }
-
-    /* Helper method to check if a menu can fit an item into a slot masks slots */
-    private List<Integer> getValidSlots(Menu menu) {
-        List<Integer> valid = new ArrayList<>();
-        if (slots != null) {
-            for (int slot : slots) {
-                if (slot >= 0 && slot < menu.getDimensions().getArea()) {
-                    valid.add(slot);
-                }
-            }
-        }
-        return valid;
     }
 
     /**
@@ -142,10 +144,10 @@ public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder {
      * @param pageBuilder menu page builder
      * @return builder instance
      */
-    public static PaginatedMenuBuilder builder(Menu.Builder pageBuilder) {
+    public static MultiSectionPaginatedMenuBuilder builder(Menu.Builder pageBuilder) {
         if (pageBuilder == null) {
             throw new IllegalArgumentException("Menu builder cannot be null");
         }
-        return new PaginatedMenuBuilder(pageBuilder);
+        return new MultiSectionPaginatedMenuBuilder(pageBuilder);
     }
 }
