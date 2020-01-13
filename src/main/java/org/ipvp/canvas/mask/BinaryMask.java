@@ -227,7 +227,7 @@ public class BinaryMask implements Mask {
         }
 
         @Override
-        public Mask.Builder pattern(String pattern) {
+        public BinaryMaskBuilder pattern(String pattern) {
             apply(pattern);
             if (row() != mask.length) {
                 nextRow();
