@@ -241,7 +241,7 @@ public abstract class AbstractMenu implements Menu  {
      * Builder instances are reusable; calling {@link #build()} will
      * generate a new Menu with identical features to the ones created before it.
      */
-    public static abstract class Builder implements Menu.Builder {
+    public static abstract class Builder<T extends Builder<T>> implements Menu.Builder<T> {
 
         private final Dimension dimensions;
         private String title;
@@ -258,21 +258,21 @@ public abstract class AbstractMenu implements Menu  {
         }
 
         @Override
-        public Menu.Builder title(String title) {
+        public T title(String title) {
             this.title = title;
-            return this;
+            return (T) this;
         }
 
         @Override
-        public Menu.Builder parent(Menu parent) {
+        public T parent(Menu parent) {
             this.parent = parent;
-            return this;
+            return (T) this;
         }
 
         @Override
-        public Menu.Builder redraw(boolean redraw) {
+        public T redraw(boolean redraw) {
             this.redraw = redraw;
-            return this;
+            return (T) this;
         }
 
         public String getTitle() {

@@ -55,7 +55,7 @@ public class ChestMenu extends AbstractMenu {
     /**
      * A builder for creating a ChestMenu instance.
      */
-    public static class Builder extends AbstractMenu.Builder {
+    public static class Builder extends AbstractMenu.Builder<Builder> {
 
         Builder(int rows) {
             super(new Dimension(rows, 9));

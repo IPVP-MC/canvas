@@ -67,7 +67,7 @@ public class BoxMenu extends AbstractMenu {
     /**
      * A builder for creating a BoxMenu instance.
      */
-    public static class Builder extends AbstractMenu.Builder {
+    public static class Builder extends AbstractMenu.Builder<Builder> {
 
         private InventoryType type;
 

@@ -50,7 +50,7 @@ public class HopperMenu extends AbstractMenu {
     /**
      * A builder for creating a BoxMenu instance.
      */
-    public static class Builder extends AbstractMenu.Builder {
+    public static class Builder extends AbstractMenu.Builder<Builder> {
 
         public Builder() {
             super(new Dimension(1, 5));

@@ -169,7 +169,7 @@ public interface Menu extends Iterable<Slot> {
     /**
      * A Builder for Menus
      */
-    interface Builder {
+    interface Builder<T extends Builder<T>> {
 
         /**
          * Returns the dimensions of the Menu to be created.
@@ -184,7 +184,7 @@ public interface Menu extends Iterable<Slot> {
          * @param title The title to display
          * @return Fluent pattern
          */
-        Builder title(String title);
+        T title(String title);
 
         /**
          * Adds a fallback parent to this Menu
@@ -192,7 +192,7 @@ public interface Menu extends Iterable<Slot> {
          * @param parent The fallback GUI
          * @return Fluent pattern
          */
-        Builder parent(Menu parent);
+        T parent(Menu parent);
 
         /**
          * Sets the redraw flag of this Menu.
@@ -201,7 +201,7 @@ public interface Menu extends Iterable<Slot> {
          * @return Fluent pattern
          * @see #isRedraw()
          */
-        Builder redraw(boolean redraw);
+        T redraw(boolean redraw);
 
         /**
          * Builds the Menu from the given data
