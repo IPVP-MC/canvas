@@ -54,8 +54,11 @@ public interface Menu extends Iterable<Slot> {
      * cursor location.
      *
      * <p>Note: This feature cannot redraw the name of
+     * inventories, so when a new inventory is open
+     * and the contents are redrawn the name will not
+     * change.
      *
-     * @return
+     * @return redraw status
      */
     boolean isRedraw();
 
