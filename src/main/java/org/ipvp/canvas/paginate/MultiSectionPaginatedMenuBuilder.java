@@ -45,7 +45,7 @@ public class MultiSectionPaginatedMenuBuilder extends AbstractPaginatedMenuBuild
     private Map<Character, Mask> sectionSlots = new HashMap<>();
     private Map<Character, List<SlotSettings>> sectionItems = new HashMap<>();
 
-    private MultiSectionPaginatedMenuBuilder(Menu.Builder pageBuilder) {
+    private MultiSectionPaginatedMenuBuilder(Menu.Builder<?> pageBuilder) {
         super(pageBuilder);
     }
 
@@ -144,7 +144,7 @@ public class MultiSectionPaginatedMenuBuilder extends AbstractPaginatedMenuBuild
      * @param pageBuilder menu page builder
      * @return builder instance
      */
-    public static MultiSectionPaginatedMenuBuilder builder(Menu.Builder pageBuilder) {
+    public static MultiSectionPaginatedMenuBuilder builder(Menu.Builder<?> pageBuilder) {
         if (pageBuilder == null) {
             throw new IllegalArgumentException("Menu builder cannot be null");
         }

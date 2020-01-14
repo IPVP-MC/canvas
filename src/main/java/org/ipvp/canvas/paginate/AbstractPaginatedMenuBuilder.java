@@ -39,7 +39,7 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractPaginatedMenuBuilder<T extends AbstractPaginatedMenuBuilder<T>> {
 
-    private final Menu.Builder pageBuilder;
+    private final Menu.Builder<?> pageBuilder;
     private Consumer<Menu> newMenuModifier;
     private int previousButtonSlot = -1;
     private int nextButtonSlot = -1;
@@ -48,7 +48,7 @@ public abstract class AbstractPaginatedMenuBuilder<T extends AbstractPaginatedMe
     private ItemStackTemplate nextButton;
     private ItemStackTemplate nextButtonEmpty;
 
-    public AbstractPaginatedMenuBuilder(Menu.Builder pageBuilder) {
+    public AbstractPaginatedMenuBuilder(Menu.Builder<?> pageBuilder) {
         this.pageBuilder = pageBuilder;
     }
 
@@ -57,7 +57,7 @@ public abstract class AbstractPaginatedMenuBuilder<T extends AbstractPaginatedMe
      *
      * @return base page builder
      */
-    public Menu.Builder getPageBuilder() {
+    public Menu.Builder<?> getPageBuilder() {
         return pageBuilder;
     }
 

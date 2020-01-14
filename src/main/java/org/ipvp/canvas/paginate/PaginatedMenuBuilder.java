@@ -43,7 +43,7 @@ public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder<Paginated
     private Mask slots;
     private List<SlotSettings> items = new ArrayList<>();
 
-    private PaginatedMenuBuilder(Menu.Builder pageBuilder) {
+    private PaginatedMenuBuilder(Menu.Builder<?> pageBuilder) {
         super(pageBuilder);
     }
 
@@ -142,7 +142,7 @@ public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder<Paginated
      * @param pageBuilder menu page builder
      * @return builder instance
      */
-    public static PaginatedMenuBuilder builder(Menu.Builder pageBuilder) {
+    public static PaginatedMenuBuilder builder(Menu.Builder<?> pageBuilder) {
         if (pageBuilder == null) {
             throw new IllegalArgumentException("Menu builder cannot be null");
         }
