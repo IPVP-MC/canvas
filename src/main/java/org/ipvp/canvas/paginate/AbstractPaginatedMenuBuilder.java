@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * Abstract implementation of a PaginatedMenuBuilder, providing basic
  * method implementations.
  */
-public abstract class AbstractPaginatedMenuBuilder {
+public abstract class AbstractPaginatedMenuBuilder<T extends AbstractPaginatedMenuBuilder<T>> {
 
     private final Menu.Builder pageBuilder;
     private Consumer<Menu> newMenuModifier;
@@ -67,9 +67,9 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param newMenuModifier modifier
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder newMenuModifier(Consumer<Menu> newMenuModifier) {
+    public T newMenuModifier(Consumer<Menu> newMenuModifier) {
         this.newMenuModifier = newMenuModifier;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -96,9 +96,9 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param previousButtonSlot slot index
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder previousButtonSlot(int previousButtonSlot) {
+    public T previousButtonSlot(int previousButtonSlot) {
         this.previousButtonSlot = previousButtonSlot;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -109,7 +109,7 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param previousButtonSlot slot mask
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder previousButtonSlot(Mask previousButtonSlot) {
+    public T previousButtonSlot(Mask previousButtonSlot) {
         return previousButtonSlot(indexFromMask(previousButtonSlot));
     }
 
@@ -128,9 +128,9 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param nextButtonSlot slot index
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder nextButtonSlot(int nextButtonSlot) {
+    public T nextButtonSlot(int nextButtonSlot) {
         this.nextButtonSlot = nextButtonSlot;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -141,7 +141,7 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param nextButtonSlot slot mask
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder nextButtonSlot(Mask nextButtonSlot) {
+    public T nextButtonSlot(Mask nextButtonSlot) {
         return nextButtonSlot(indexFromMask(nextButtonSlot));
     }
 
@@ -169,7 +169,7 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param item icon
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder previousButton(ItemStack item) {
+    public T previousButton(ItemStack item) {
         return previousButton(new StaticItemTemplate(item));
     }
 
@@ -179,9 +179,9 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param item icon template
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder previousButton(ItemStackTemplate item) {
+    public T previousButton(ItemStackTemplate item) {
         this.previousButton = item;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -200,7 +200,7 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param item icon
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder previousButtonEmpty(ItemStack item) {
+    public T previousButtonEmpty(ItemStack item) {
         return previousButtonEmpty(new StaticItemTemplate(item));
     }
 
@@ -210,9 +210,9 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param item icon template
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder previousButtonEmpty(ItemStackTemplate item) {
+    public T previousButtonEmpty(ItemStackTemplate item) {
         this.previousButtonEmpty = item;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -230,7 +230,7 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param item icon
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder nextButton(ItemStack item) {
+    public T nextButton(ItemStack item) {
         return nextButton(new StaticItemTemplate(item));
     }
 
@@ -240,9 +240,9 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param item icon template
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder nextButton(ItemStackTemplate item) {
+    public T nextButton(ItemStackTemplate item) {
         this.nextButton = item;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -261,7 +261,7 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param item icon
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder nextButtonEmpty(ItemStack item) {
+    public T nextButtonEmpty(ItemStack item) {
         return nextButtonEmpty(new StaticItemTemplate(item));
     }
 
@@ -271,9 +271,9 @@ public abstract class AbstractPaginatedMenuBuilder {
      * @param item icon template
      * @return fluent pattern
      */
-    public AbstractPaginatedMenuBuilder nextButtonEmpty(ItemStackTemplate item) {
+    public T nextButtonEmpty(ItemStackTemplate item) {
         this.nextButtonEmpty = item;
-        return this;
+        return (T) this;
     }
 
     /**

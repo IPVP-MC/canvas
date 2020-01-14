@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * Fluent builder to assist with creating series of Menus.
  */
-public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder {
+public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder<PaginatedMenuBuilder> {
 
     private Mask slots;
     private List<SlotSettings> items = new ArrayList<>();

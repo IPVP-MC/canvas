@@ -40,7 +40,7 @@ import java.util.Map;
 /**
  * Fluent builder to assist with creating series of Menus.
  */
-public class MultiSectionPaginatedMenuBuilder extends AbstractPaginatedMenuBuilder {
+public class MultiSectionPaginatedMenuBuilder extends AbstractPaginatedMenuBuilder<MultiSectionPaginatedMenuBuilder> {
 
     private Map<Character, Mask> sectionSlots = new HashMap<>();
     private Map<Character, List<SlotSettings>> sectionItems = new HashMap<>();
