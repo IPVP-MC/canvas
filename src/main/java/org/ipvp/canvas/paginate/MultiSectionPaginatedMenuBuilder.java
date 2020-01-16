@@ -32,6 +32,7 @@ import org.ipvp.canvas.template.ItemStackTemplate;
 import org.ipvp.canvas.template.StaticItemTemplate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -91,6 +92,39 @@ public class MultiSectionPaginatedMenuBuilder extends AbstractPaginatedMenuBuild
     public MultiSectionPaginatedMenuBuilder addItem(char character, SlotSettings item) {
         List<SlotSettings> currentItems = sectionItems.compute(character, (k, v) -> v == null ? new ArrayList<>() : v);
         currentItems.add(item);
+        return this;
+    }
+
+    /**
+     * Adds a collection of items for pagination.
+     *
+     * @param items items
+     * @return fluent pattern
+     */
+    public MultiSectionPaginatedMenuBuilder addItems(char character, Collection<ItemStack> items) {
+        items.forEach(i -> addItem(character, i));
+        return this;
+    }
+
+    /**
+     * Adds a collection of items for pagination.
+     *
+     * @param items items
+     * @return fluent pattern
+     */
+    public MultiSectionPaginatedMenuBuilder addItemTemplates(char character, Collection<ItemStackTemplate> items) {
+        items.forEach(i -> addItem(character, i));
+        return this;
+    }
+
+    /**
+     * Adds a collection of slot settings for pagination.
+     *
+     * @param slotSettings slotSettings
+     * @return fluent pattern
+     */
+    public MultiSectionPaginatedMenuBuilder addSlotSettings(char character, Collection<SlotSettings> slotSettings) {
+        slotSettings.forEach(s -> addItem(character, s));
         return this;
     }
 

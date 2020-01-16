@@ -32,6 +32,7 @@ import org.ipvp.canvas.template.ItemStackTemplate;
 import org.ipvp.canvas.template.StaticItemTemplate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -86,6 +87,39 @@ public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder<Paginated
      */
     public PaginatedMenuBuilder addItem(SlotSettings item) {
         items.add(item);
+        return this;
+    }
+
+    /**
+     * Adds a collection of items for pagination.
+     *
+     * @param items items
+     * @return fluent pattern
+     */
+    public PaginatedMenuBuilder addItems(Collection<ItemStack> items) {
+        items.forEach(this::addItem);
+        return this;
+    }
+
+    /**
+     * Adds a collection of items for pagination.
+     *
+     * @param items items
+     * @return fluent pattern
+     */
+    public PaginatedMenuBuilder addItemTemplates(Collection<ItemStackTemplate> items) {
+        items.forEach(this::addItem);
+        return this;
+    }
+
+    /**
+     * Adds a collection of slot settings for pagination.
+     *
+     * @param slotSettings slotSettings
+     * @return fluent pattern
+     */
+    public PaginatedMenuBuilder addSlotSettings(Collection<SlotSettings> slotSettings) {
+        slotSettings.forEach(this::addItem);
         return this;
     }
 
