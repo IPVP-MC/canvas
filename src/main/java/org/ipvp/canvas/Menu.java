@@ -26,6 +26,8 @@ package org.ipvp.canvas;
 import java.util.Optional;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.inventory.InventoryAction;
 import org.ipvp.canvas.slot.Slot;
 
 /**
@@ -36,6 +38,13 @@ import org.ipvp.canvas.slot.Slot;
  * is properly registered with the Bukkit event scheduler.
  */
 public interface Menu extends Iterable<Slot> {
+
+    /**
+     * Drop handler that allows all cursor items to be dropped by default.
+     *
+     * <p>Apply to a menu using {@link #setCursorDropHandler(CursorDropHandler)}.
+     */
+    CursorDropHandler ALLOW_CURSOR_DROPPING = (p, c) -> c.setResult(Event.Result.ALLOW);
 
     /**
      * Returns the fallback Menu for when this menu is closed
@@ -153,6 +162,21 @@ public interface Menu extends Iterable<Slot> {
     void setCloseHandler(CloseHandler handler);
 
     /**
+     * Gets the cursor drop handler.
+     *
+     * @return drop handler
+     */
+    Optional<CursorDropHandler> getCursorDropHandler();
+
+    /**
+     * Sets a new handler policy for when players drop items from their cursor
+     * outside the menu.
+     *
+     * @param handler drop handler
+     */
+    void setCursorDropHandler(CursorDropHandler handler);
+
+    /**
      * A Menu close handler is a user defined function or policy that occurs when a
      * Player closes a menu.
      */
@@ -167,6 +191,26 @@ public interface Menu extends Iterable<Slot> {
          * @param menu Menu that was closed
          */
         void close(Player player, Menu menu);
+    }
+
+    /**
+     * Interface for handling events where a player drops an item using their
+     * cursor outside the menu.
+     *
+     * <p>Since there is no slot clicked, this handler is triggered when an inventory
+     * action with type {@link InventoryAction#DROP_ONE_CURSOR} or {@link InventoryAction#DROP_ALL_CURSOR}
+     * is performed in an inventory.
+     */
+    @FunctionalInterface
+    interface CursorDropHandler {
+
+        /**
+         * Called when a player drops an item with their cursor.
+         *
+         * @param player player dropping an item
+         * @param click information about the performed click
+         */
+        void click(Player player, CursorDropInformation click);
     }
 
     /**

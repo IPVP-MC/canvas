@@ -111,7 +111,16 @@ public final class MenuFunctionListener implements Listener {
                 // the safe side.
                 case DROP_ALL_CURSOR:
                 case DROP_ONE_CURSOR:
-                    // Fall through
+                    event.setResult(Event.Result.DENY);
+                    if (menu.getCursorDropHandler().isPresent()) {
+                        CursorDropInformation dropInformation = new CursorDropInformation(action, event.getClick(),
+                                menu, event.getResult(), event.getCursor());
+                        menu.getCursorDropHandler().get().click((Player) event.getWhoClicked(), dropInformation);
+                        event.setResult(dropInformation.getResult());
+                    } else {
+                        event.setCancelled(true);
+                    }
+                    break;
                     
                 // We also disallow collecting to cursor as this has a more complicated behavior
                 // than we are willing to process. 

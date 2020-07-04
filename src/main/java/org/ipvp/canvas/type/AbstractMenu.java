@@ -50,6 +50,7 @@ public abstract class AbstractMenu implements Menu  {
     private boolean redraw;
     private DefaultSlot[] slots;
     private CloseHandler handler;
+    private CursorDropHandler cursorDropHandler;
     private Set<MenuHolder> viewers = new HashSet<>();
 
     // Bukkit Inventory information
@@ -233,6 +234,16 @@ public abstract class AbstractMenu implements Menu  {
     @Override
     public Optional<CloseHandler> getCloseHandler() {
         return Optional.ofNullable(handler);
+    }
+
+    @Override
+    public Optional<CursorDropHandler> getCursorDropHandler() {
+        return Optional.ofNullable(cursorDropHandler);
+    }
+
+    @Override
+    public void setCursorDropHandler(CursorDropHandler handler) {
+        this.cursorDropHandler = handler;
     }
 
     /**
