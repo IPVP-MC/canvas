@@ -29,7 +29,7 @@ You will now be able to add canvas as a repository in your pom.xml files with th
 <dependency>
     <groupId>org.ipvp</groupId>
     <artifactId>canvas</artifactId>
-    <version>1.5.0-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
     <scope>compile</scope>
 </dependency>
 ```
