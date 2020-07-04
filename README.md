@@ -245,5 +245,26 @@ The final product we end up with is:
 
 ![](http://i.imgur.com/BHt65l6.png)
 
+#### Recipe Masks
+A [RecipeMask](src/main/java/org/ipvp/canvas/mask/RecipeMask.java) is another abstraction of mask which enabled assigning
+multiple types of items to slots. In the above image suppose we want every second item to be a red stained glass pane, we
+could use a RecipeMask in the following way:
+```java
+public void addRedWhiteBorder(Inventory inventory) {
+    Mask mask = RecipeMask.builder(menu)
+            .pattern("wrwrwrwrw") // First row
+            .pattern("r0000000r") // Second row
+            .pattern("w0000000w") // Third row
+            .pattern("rwrwrwrwr").build(); // Fourth row
+    mask.apply(menu);
+}
+```
+In the above, we use the `w` and `r` characters in the pattern wherever we want and then assign an item
+to that character. If no item is assigned, the character will default to `AIR` in the final product.   
+
+The final product we end up with is:
+
+![](https://i.imgur.com/eWU3BuG.png)
+
 ## License
 canvas is open source and is available under the [MIT license](LICENSE.txt).
