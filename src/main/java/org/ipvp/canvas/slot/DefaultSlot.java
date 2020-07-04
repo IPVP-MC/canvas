@@ -32,6 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.template.ItemStackTemplate;
 import org.ipvp.canvas.template.StaticItemTemplate;
 import org.ipvp.canvas.type.AbstractMenu;
+import org.ipvp.canvas.type.MenuHolder;
 
 /**
  * A slot defined for default use by all Menus defined by this library.
@@ -101,6 +102,26 @@ public class DefaultSlot implements Slot {
             Inventory inventory = v.getInventory();
             inventory.setItem(index, getItem(v.getViewer()));
         });
+    }
+
+    @Override
+    public ItemStack getRawItem(Player viewer) {
+        Optional<MenuHolder> menu = handle.getViewers().stream()
+                .filter(v -> v.getViewer().equals(viewer)).findFirst();
+        if (!menu.isPresent()) {
+            throw new IllegalStateException("Player not viewing parent menu");
+        }
+        return menu.get().getInventory().getItem(getIndex());
+    }
+
+    @Override
+    public void setRawItem(Player viewer, ItemStack item) {
+        Optional<MenuHolder> menu = handle.getViewers().stream()
+                .filter(v -> v.getViewer().equals(viewer)).findFirst();
+        if (!menu.isPresent()) {
+            throw new IllegalStateException("Player not viewing parent menu");
+        }
+        menu.get().getInventory().setItem(getIndex(), item);
     }
 
     @Override
