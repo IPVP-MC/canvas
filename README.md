@@ -24,7 +24,7 @@ cd canvas/
 mvn clean install
 ```
 
-You will now be able to add canvas as a repository in your pom.xml files with the following
+You will now be able to add canvas as a dependency in your pom.xml files with the following
 ```xml
 <dependency>
     <groupId>org.ipvp</groupId>
@@ -33,6 +33,24 @@ You will now be able to add canvas as a repository in your pom.xml files with th
     <scope>compile</scope>
 </dependency>
 ```
+
+**Note**: You will need to use the Maven shade plugin in order to package your final `.jar` file. Add the following to your maven plugins section:
+```
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-shade-plugin</artifactId>
+    <version>3.2.4</version>
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>shade</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>   
+```
+see [here](https://maven.apache.org/plugins/maven-shade-plugin/) for additional documentation on the shade plugin.
 
 Once the dependency is registered, the only thing left to do is to register the [MenuFunctionListener](src/main/java/org/ipvp/canvas/MenuFunctionListener.java) with the Bukkit event dispatcher.
 
