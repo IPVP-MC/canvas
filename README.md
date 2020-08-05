@@ -4,9 +4,13 @@ A highly advanced and effective inventory management library for Bukkit plugins.
 
 ## Feature Overview
 * [Menus](#menus) - the basics of GUI creation
+    * [Close Handlers](#close-handlers) - handling close behavior
+    * [Redrawing](#redrawing) - preventing cursor position resets
+    * [Pagination](#pagination) - menu pages made easy
 * [Slots](#slots) - controlling what GUI slots do
 * [Templates](#templates) - rendering non-static items on a per-player basis
 * [Masks](#masks) - inventory slot IDs made easy!
+    * [Recipe Masks](#recipe-masks) - multiple item masks
 
 ## Using canvas
 
@@ -124,8 +128,10 @@ Mask2D itemSlots = Mask2D.builder(pageTemplate.getDimensions())
 List<Menu> pages = PaginatedMenuBuilder.builder(pageTemplate)
         .slots(itemSlots)
         .nextButton(new ItemStack(Material.ARROW))
+        .nextButtonEmpty(new ItemStack(Material.ARROW)) // Icon when no next page available
         .nextButtonSlot(23)
         .previousButton(new ItemStack(Material.ARROW))
+        .previousButtonEmpty(new ItemStack(Material.ARROW)) // Icon when no previous page available
         .previousButtonSlot(21)
         .addItem(new ItemStack(Material.DIRT))
         .addItem(new ItemStack(Material.GRASS))
@@ -138,7 +144,7 @@ Per-player items and click handlers are supported for added items as well, via t
 or `PaginatedMenuBuilder.addItem(SlotSettings)` methods.
 
 If additional modifications need to be made to any newly created page that the builder doesn't support, adding functionality 
-to modify a freshly created page is available by adding a `Consumer<Menu>` with the `PaginatedMenuBuilder.newMenuModifier(Consumer<Menu>)` method.
+to modify a freshly created page is available by adding a `Consumer<Menu>` with the `PaginatedMenuBuilder.newMenuModifier(Consumer<Menu>)` method. 
 
 ### Slots
 A [Slot](src/main/java/org/ipvp/canvas/slot/Slot.java) is exactly what you'd expect it to be, however canvas allows 
