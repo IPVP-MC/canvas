@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Fluent builder to assist with creating series of Menus.
@@ -142,8 +143,9 @@ public class MultiSectionPaginatedMenuBuilder extends AbstractPaginatedMenuBuild
 
         do {
             Menu page = getPageBuilder().build();
-            if (getNewMenuModifier() != null) {
-                getNewMenuModifier().accept(page);
+            if (!getNewMenuModifiers().isEmpty()) {
+                for (Consumer<Menu> menuModifier : getNewMenuModifiers())
+                    menuModifier.accept(page);
             }
             setPaginationIcon(page, getPreviousButtonSlot(), getPreviousButtonEmpty());
             setPaginationIcon(page, getNextButtonSlot(), getNextButtonEmpty());

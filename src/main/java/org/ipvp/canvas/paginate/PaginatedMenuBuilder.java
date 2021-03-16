@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Fluent builder to assist with creating series of Menus.
@@ -134,8 +135,9 @@ public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder<Paginated
 
         do {
             Menu page = getPageBuilder().build();
-            if (getNewMenuModifier() != null) {
-                getNewMenuModifier().accept(page);
+            if (!getNewMenuModifiers().isEmpty()) {
+                for (Consumer<Menu> menuModifier : getNewMenuModifiers())
+                    menuModifier.accept(page);
             }
             List<Integer> validSlots = getValidSlots(page);
             setPaginationIcon(page, getPreviousButtonSlot(), getPreviousButtonEmpty());

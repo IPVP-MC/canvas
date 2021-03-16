@@ -30,6 +30,8 @@ import org.ipvp.canvas.slot.Slot;
 import org.ipvp.canvas.template.ItemStackTemplate;
 import org.ipvp.canvas.template.StaticItemTemplate;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -40,7 +42,7 @@ import java.util.function.Consumer;
 public abstract class AbstractPaginatedMenuBuilder<T extends AbstractPaginatedMenuBuilder<T>> {
 
     private final Menu.Builder<?> pageBuilder;
-    private Consumer<Menu> newMenuModifier;
+    private final List<Consumer<Menu>> newMenuModifiers;
     private int previousButtonSlot = -1;
     private int nextButtonSlot = -1;
     private ItemStackTemplate previousButton;
@@ -50,6 +52,7 @@ public abstract class AbstractPaginatedMenuBuilder<T extends AbstractPaginatedMe
 
     public AbstractPaginatedMenuBuilder(Menu.Builder<?> pageBuilder) {
         this.pageBuilder = pageBuilder;
+        this.newMenuModifiers = new LinkedList<>();
     }
 
     /**
@@ -62,23 +65,34 @@ public abstract class AbstractPaginatedMenuBuilder<T extends AbstractPaginatedMe
     }
 
     /**
-     * Sets the modifier for when a new menu is created.
+     * Adds a modifier for when a new menu is created.
      *
      * @param newMenuModifier modifier
      * @return fluent pattern
      */
     public T newMenuModifier(Consumer<Menu> newMenuModifier) {
-        this.newMenuModifier = newMenuModifier;
+        if (newMenuModifier != null)
+            this.newMenuModifiers.add(newMenuModifier);
         return (T) this;
     }
 
     /**
-     * Gets the current modifier for when a new menu is created.
+     * Adds multiple modifiers for when a new menu is created.
+     * @param newMenuModifiers a collection of modifiers
+     * @return fluent pattern
+     */
+    public T newMenuModifiers(Collection<Consumer<Menu>> newMenuModifiers) {
+        newMenuModifiers.forEach(this::newMenuModifier);
+        return (T) this;
+    }
+
+    /**
+     * Gets the current modifiers for when a new menu is created.
      *
      * @return menu modifier
      */
-    public Consumer<Menu> getNewMenuModifier() {
-        return newMenuModifier;
+    public List<Consumer<Menu>> getNewMenuModifiers() {
+        return newMenuModifiers;
     }
 
     /**
