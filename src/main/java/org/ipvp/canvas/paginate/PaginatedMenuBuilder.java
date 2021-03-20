@@ -136,8 +136,9 @@ public class PaginatedMenuBuilder extends AbstractPaginatedMenuBuilder<Paginated
         do {
             Menu page = getPageBuilder().build();
             if (!getNewMenuModifiers().isEmpty()) {
-                for (Consumer<Menu> menuModifier : getNewMenuModifiers())
+                for (Consumer<Menu> menuModifier : getNewMenuModifiers()) {
                     menuModifier.accept(page);
+                }
             }
             List<Integer> validSlots = getValidSlots(page);
             setPaginationIcon(page, getPreviousButtonSlot(), getPreviousButtonEmpty());

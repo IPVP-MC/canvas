@@ -71,8 +71,10 @@ public abstract class AbstractPaginatedMenuBuilder<T extends AbstractPaginatedMe
      * @return fluent pattern
      */
     public T newMenuModifier(Consumer<Menu> newMenuModifier) {
-        if (newMenuModifier != null)
-            this.newMenuModifiers.add(newMenuModifier);
+        if (newMenuModifier == null) {
+            throw new IllegalArgumentException("Menu modifier cannot be null");
+        }
+        this.newMenuModifiers.add(newMenuModifier);
         return (T) this;
     }
 

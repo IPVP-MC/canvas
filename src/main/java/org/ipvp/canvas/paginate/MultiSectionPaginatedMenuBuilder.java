@@ -144,8 +144,9 @@ public class MultiSectionPaginatedMenuBuilder extends AbstractPaginatedMenuBuild
         do {
             Menu page = getPageBuilder().build();
             if (!getNewMenuModifiers().isEmpty()) {
-                for (Consumer<Menu> menuModifier : getNewMenuModifiers())
+                for (Consumer<Menu> menuModifier : getNewMenuModifiers()) {
                     menuModifier.accept(page);
+                }
             }
             setPaginationIcon(page, getPreviousButtonSlot(), getPreviousButtonEmpty());
             setPaginationIcon(page, getNextButtonSlot(), getNextButtonEmpty());
