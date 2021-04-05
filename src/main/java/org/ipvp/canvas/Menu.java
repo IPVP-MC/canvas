@@ -95,6 +95,11 @@ public interface Menu extends Iterable<Slot> {
     void close(Player viewer) throws IllegalStateException;
 
     /**
+     * Closes the menu for all viewing players.
+     */
+    void closeAll();
+
+    /**
      * Re-renders the menu for the player.
      *
      * <p>If any items have changed in the inventory and a
@@ -105,6 +110,13 @@ public interface Menu extends Iterable<Slot> {
      * @throws IllegalStateException If player is not viewing the menu
      */
     void update(Player viewer) throws IllegalStateException;
+
+    /**
+     * Re-renders the menu for all viewing players.
+     *
+     * @see Menu#update(Player)
+     */
+    void updateViewers();
 
     /**
      * Returns the Slot found at the given index of the Menu.

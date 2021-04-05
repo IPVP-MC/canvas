@@ -23,13 +23,6 @@
 
 package org.ipvp.canvas.type;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -39,6 +32,8 @@ import org.ipvp.canvas.ArrayIterator;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.slot.DefaultSlot;
 import org.ipvp.canvas.slot.Slot;
+
+import java.util.*;
 
 /**
  * An abstract class that provides a skeletal implementation of the Menu 
@@ -166,6 +161,11 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
+    public void closeAll() {
+        getViewers().forEach(menuHolder -> close(menuHolder.getViewer()));
+    }
+
+    @Override
     public void update(Player viewer) throws IllegalStateException {
         if (!isOpen(viewer)) {
             return;
@@ -173,6 +173,11 @@ public abstract class AbstractMenu implements Menu  {
 
         InventoryHolder openInventory = viewer.getOpenInventory().getTopInventory().getHolder();
         updateInventoryContents(viewer, openInventory.getInventory());
+    }
+
+    @Override
+    public void updateViewers() {
+        getViewers().forEach(menuHolder -> update(menuHolder.getViewer()));
     }
 
     public void closedByPlayer(Player viewer, boolean triggerCloseHandler) {
