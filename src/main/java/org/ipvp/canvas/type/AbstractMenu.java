@@ -184,11 +184,12 @@ public abstract class AbstractMenu implements Menu  {
             return;
         }
 
-        MenuHolder holder = (MenuHolder) currentInventory;
-        viewers.remove(holder);
         if (triggerCloseHandler) {
             getCloseHandler().ifPresent(h -> h.close(viewer, this));
         }
+        
+        MenuHolder holder = (MenuHolder) currentInventory;
+        viewers.remove(holder);
     }
 
     public Set<MenuHolder> getViewers() {
