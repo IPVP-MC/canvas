@@ -33,7 +33,12 @@ import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.slot.DefaultSlot;
 import org.ipvp.canvas.slot.Slot;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * An abstract class that provides a skeletal implementation of the Menu 
