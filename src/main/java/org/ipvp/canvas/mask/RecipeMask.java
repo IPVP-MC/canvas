@@ -27,14 +27,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.slot.Slot;
+import org.ipvp.canvas.slot.SlotSettings;
 import org.ipvp.canvas.template.ItemStackTemplate;
 import org.ipvp.canvas.template.StaticItemTemplate;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A mask that accepts maps items to specific characters,
@@ -62,12 +59,12 @@ public class RecipeMask implements Mask {
 
     private final Menu.Dimension dimension;
     private Map<Integer, Character> mask;
-    private Map<Character, ItemStackTemplate> items;
+    private Map<Character, SlotSettings> settings;
 
-    RecipeMask(Menu.Dimension dimension, Map<Integer, Character> mask, Map<Character, ItemStackTemplate> items) {
+    RecipeMask(Menu.Dimension dimension, Map<Integer, Character> mask, Map<Character, SlotSettings> settings) {
         this.dimension = dimension;
         this.mask = Collections.unmodifiableMap(mask);
-        this.items = Collections.unmodifiableMap(items);
+        this.settings = Collections.unmodifiableMap(settings);
     }
 
     @Override
@@ -96,9 +93,9 @@ public class RecipeMask implements Mask {
     @Override
     public void apply(Menu menu) {
         mask.forEach((slot, character) -> {
-            ItemStackTemplate item = items.get(character);
+            SlotSettings settings = this.settings.get(character);
             Slot affected = menu.getSlot(slot);
-            affected.setItemTemplate(item);
+            affected.setSettings(settings);
         });
     }
 
@@ -156,7 +153,7 @@ public class RecipeMask implements Mask {
         private Menu.Dimension dimensions;
         private int row;
         private char[][] mask;
-        private Map<Character, ItemStackTemplate> items = new HashMap<>();
+        private Map<Character, SlotSettings> settings = new HashMap<>();
 
         RecipeMaskBuilder(Menu.Dimension dimensions) {
             this.dimensions = dimensions;
@@ -188,7 +185,7 @@ public class RecipeMask implements Mask {
             if (row < 1 || row > dimensions.getRows()) {
                 throw new IllegalStateException("Row must be a value from 1 to " + rows());
             }
-            this.row = row -1;
+            this.row = row - 1;
             return this;
         }
 
@@ -196,6 +193,7 @@ public class RecipeMask implements Mask {
          * Sets the item that the mask will apply to an
          * inventory.
          *
+         * @param character target character to fill within the pattern
          * @param item item
          * @return fluent pattern
          */
@@ -207,14 +205,27 @@ public class RecipeMask implements Mask {
          * Sets the item that the mask will apply to an
          * inventory.
          *
+         * @param character target character to fill within the pattern
          * @param item item
          * @return fluent pattern
          */
         public RecipeMaskBuilder item(char character, ItemStackTemplate item) {
-            if (item == null) {
-                items.remove(character);
+            return item(character, SlotSettings.builder().itemTemplate(item).build());
+        }
+
+        /**
+         * Sets the item/slot settings that the mask will apply
+         * to affected slots within a targeted inventory.
+         *
+         * @param character target character to fill within the pattern
+         * @param settings  slot settings
+         * @return fluent pattern
+         */
+        public RecipeMaskBuilder item(char character, SlotSettings settings) {
+            if (settings == null) {
+                this.settings.remove(character);
             } else {
-                items.put(character, item);
+                this.settings.put(character, settings);
             }
             return this;
         }
@@ -264,7 +275,7 @@ public class RecipeMask implements Mask {
                     slots.put(r * columns() + c, character);
                 }
             }
-            return new RecipeMask(dimensions, slots, items);
+            return new RecipeMask(dimensions, slots, settings);
         }
     }
 }

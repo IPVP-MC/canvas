@@ -26,6 +26,7 @@ package org.ipvp.canvas.mask;
 import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.slot.Slot;
+import org.ipvp.canvas.slot.SlotSettings;
 import org.ipvp.canvas.template.ItemStackTemplate;
 import org.ipvp.canvas.template.StaticItemTemplate;
 
@@ -46,12 +47,12 @@ public class BinaryMask implements Mask {
 
     private final Menu.Dimension dimension;
     private List<Integer> mask;
-    private ItemStackTemplate item;
+    private SlotSettings settings;
 
-    BinaryMask(Menu.Dimension dimension, List<Integer> mask, ItemStackTemplate item) {
+    BinaryMask(Menu.Dimension dimension, List<Integer> mask, SlotSettings settings) {
         this.dimension = dimension;
         this.mask = Collections.unmodifiableList(mask);
-        this.item = item;
+        this.settings = settings;
     }
 
     @Override
@@ -81,7 +82,7 @@ public class BinaryMask implements Mask {
     public void apply(Menu menu) {
         for (int slot : getSlots()) {
             Slot affected = menu.getSlot(slot);
-            affected.setItemTemplate(item);
+            affected.setSettings(settings);
         }
     }
 
@@ -139,7 +140,7 @@ public class BinaryMask implements Mask {
         private Menu.Dimension dimensions;
         private int row;
         private int[][] mask;
-        private ItemStackTemplate item;
+        private SlotSettings settings;
         
         BinaryMaskBuilder(Menu.Dimension dimensions) {
             this.dimensions = dimensions;
@@ -187,20 +188,31 @@ public class BinaryMask implements Mask {
         }
 
         /**
-         * Sets the item that the mask will apply to an
-         * inventory.
+         * Sets the item that the mask will apply to affected
+         * slots within a target inventory.
          *
          * @param item item
          * @return fluent pattern
          */
         public BinaryMaskBuilder item(ItemStackTemplate item) {
-            this.item = item;
+            return item(SlotSettings.builder().itemTemplate(item).build());
+        }
+
+        /**
+         * Sets the item/slot settings the mask will apply
+         * to affected slots within a target inventory.
+         *
+         * @param settings slot settings
+         * @return fluent pattern
+         */
+        public BinaryMaskBuilder item(SlotSettings settings) {
+            this.settings = settings;
             return this;
         }
 
         @Override
         public BinaryMaskBuilder nextRow() throws IllegalStateException {
-            if (row == mask.length){
+            if (row == mask.length) {
                 throw new IllegalStateException("Current line is the last row");
             }
             ++row;
@@ -246,7 +258,7 @@ public class BinaryMask implements Mask {
                     }
                 }
             }
-            return new BinaryMask(dimensions, slots, item);
+            return new BinaryMask(dimensions, slots, settings);
         }
     }
 }
