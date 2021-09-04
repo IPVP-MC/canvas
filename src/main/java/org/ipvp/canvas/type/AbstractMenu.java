@@ -161,9 +161,19 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
+    public void close() {
+        getViewers().forEach(this::close);
+    }
+
+    @Override
     public void close(Player viewer) {
         closedByPlayer(viewer, true);
         viewer.closeInventory();
+    }
+
+    @Override
+    public void update() {
+        getViewers().forEach(this::update);
     }
 
     @Override
