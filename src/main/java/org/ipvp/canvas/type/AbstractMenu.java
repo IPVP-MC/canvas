@@ -23,12 +23,8 @@
 
 package org.ipvp.canvas.type;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -51,7 +47,7 @@ public abstract class AbstractMenu implements Menu  {
     private DefaultSlot[] slots;
     private CloseHandler handler;
     private CursorDropHandler cursorDropHandler;
-    private Set<MenuHolder> viewers = new HashSet<>();
+    private final Set<MenuHolder> holders = new HashSet<>();
 
     // Bukkit Inventory information
     protected String inventoryTitle;
@@ -127,7 +123,7 @@ public abstract class AbstractMenu implements Menu  {
 
             updateInventoryContents(viewer, inventory);
             holder.setMenu(this);
-            viewers.add(holder);
+            holders.add(holder);
         } else {
             // Create new MenuHolder for the player
             MenuHolder holder = new MenuHolder(viewer, this);
@@ -135,7 +131,7 @@ public abstract class AbstractMenu implements Menu  {
             updateInventoryContents(viewer, inventory);
             holder.setInventory(inventory);
             viewer.openInventory(inventory);
-            viewers.add(holder);
+            holders.add(holder);
         }
     }
 
@@ -153,10 +149,15 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
+    public Collection<Player> getViewers() {
+        return getHolders().stream().map(MenuHolder::getViewer).collect(Collectors.toSet());
+    }
+
+    @Override
     public boolean isOpen(Player viewer) {
         InventoryHolder currentInventory =
                 viewer.getOpenInventory().getTopInventory().getHolder();
-        return currentInventory instanceof MenuHolder && viewers.contains(currentInventory);
+        return currentInventory instanceof MenuHolder && holders.contains(currentInventory);
     }
 
     @Override
@@ -180,19 +181,19 @@ public abstract class AbstractMenu implements Menu  {
                 viewer.getOpenInventory().getTopInventory().getHolder();
 
         if (!(currentInventory instanceof MenuHolder)
-                || !viewers.contains(currentInventory)) {
+                || !holders.contains(currentInventory)) {
             return;
         }
 
         MenuHolder holder = (MenuHolder) currentInventory;
-        viewers.remove(holder);
+        holders.remove(holder);
         if (triggerCloseHandler) {
             getCloseHandler().ifPresent(h -> h.close(viewer, this));
         }
     }
 
-    public Set<MenuHolder> getViewers() {
-        return Collections.unmodifiableSet(viewers);
+    public Set<MenuHolder> getHolders() {
+        return Collections.unmodifiableSet(holders);
     }
 
     @Override

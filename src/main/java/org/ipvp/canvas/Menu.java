@@ -23,6 +23,7 @@
 
 package org.ipvp.canvas;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import org.bukkit.entity.Player;
@@ -70,6 +71,14 @@ public interface Menu extends Iterable<Slot> {
      * @return redraw status
      */
     boolean isRedraw();
+
+    /**
+     * Returns all players that are currently viewing
+     * this menu.
+     *
+     * @return players viewing menu
+     */
+    Collection<Player> getViewers();
 
     /**
      * Returns whether the player currently has this menu open.

@@ -98,7 +98,7 @@ public class DefaultSlot implements Slot {
     @Override
     public void setItemTemplate(ItemStackTemplate item) {
         this.item = item;
-        handle.getViewers().forEach(v -> {
+        handle.getHolders().forEach(v -> {
             Inventory inventory = v.getInventory();
             inventory.setItem(index, getItem(v.getViewer()));
         });
@@ -106,7 +106,7 @@ public class DefaultSlot implements Slot {
 
     @Override
     public ItemStack getRawItem(Player viewer) {
-        Optional<MenuHolder> menu = handle.getViewers().stream()
+        Optional<MenuHolder> menu = handle.getHolders().stream()
                 .filter(v -> v.getViewer().equals(viewer)).findFirst();
         if (!menu.isPresent()) {
             throw new IllegalStateException("Player not viewing parent menu");
@@ -116,7 +116,7 @@ public class DefaultSlot implements Slot {
 
     @Override
     public void setRawItem(Player viewer, ItemStack item) {
-        Optional<MenuHolder> menu = handle.getViewers().stream()
+        Optional<MenuHolder> menu = handle.getHolders().stream()
                 .filter(v -> v.getViewer().equals(viewer)).findFirst();
         if (!menu.isPresent()) {
             throw new IllegalStateException("Player not viewing parent menu");
