@@ -24,7 +24,9 @@
 package org.ipvp.canvas.slot;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.template.ItemStackTemplate;
+import org.ipvp.canvas.template.StaticItemTemplate;
 
 /**
  * Utility class that holds the settings of a slot.
@@ -98,6 +100,13 @@ public class SlotSettings {
         public Builder clickHandler(Slot.ClickHandler clickHandler) {
             this.clickHandler = clickHandler;
             return this;
+        }
+
+        /**
+         * @see Slot#setItem(ItemStack)
+         */
+        public Builder item(ItemStack itemStack) {
+            return itemTemplate(itemStack == null ? null : new StaticItemTemplate(itemStack));
         }
 
         /**
