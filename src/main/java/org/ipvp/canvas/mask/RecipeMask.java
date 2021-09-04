@@ -61,7 +61,7 @@ public class RecipeMask implements Mask {
     private Map<Integer, Character> mask;
     private Map<Character, SlotSettings> settings;
 
-    RecipeMask(Menu.Dimension dimension, Map<Integer, Character> mask, Map<Character, SlotSettings> settings) {
+    protected RecipeMask(Menu.Dimension dimension, Map<Integer, Character> mask, Map<Character, SlotSettings> settings) {
         this.dimension = dimension;
         this.mask = Collections.unmodifiableMap(mask);
         this.settings = Collections.unmodifiableMap(settings);
@@ -155,7 +155,7 @@ public class RecipeMask implements Mask {
         private char[][] mask;
         private Map<Character, SlotSettings> settings = new HashMap<>();
 
-        RecipeMaskBuilder(Menu.Dimension dimensions) {
+        protected RecipeMaskBuilder(Menu.Dimension dimensions) {
             this.dimensions = dimensions;
             this.mask = new char[dimensions.getRows()][dimensions.getColumns()];
         }

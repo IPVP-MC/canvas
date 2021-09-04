@@ -49,7 +49,7 @@ public class BinaryMask implements Mask {
     private List<Integer> mask;
     private SlotSettings settings;
 
-    BinaryMask(Menu.Dimension dimension, List<Integer> mask, SlotSettings settings) {
+    protected BinaryMask(Menu.Dimension dimension, List<Integer> mask, SlotSettings settings) {
         this.dimension = dimension;
         this.mask = Collections.unmodifiableList(mask);
         this.settings = settings;
@@ -141,12 +141,12 @@ public class BinaryMask implements Mask {
         private int row;
         private int[][] mask;
         private SlotSettings settings;
-        
-        BinaryMaskBuilder(Menu.Dimension dimensions) {
+
+        protected BinaryMaskBuilder(Menu.Dimension dimensions) {
             this.dimensions = dimensions;
             this.mask = new int[dimensions.getRows()][dimensions.getColumns()];
         }
-        
+
         @Override
         public int currentLine() {
             return row;
@@ -156,7 +156,7 @@ public class BinaryMask implements Mask {
         public int rows() {
             return dimensions.getRows();
         }
-        
+
         @Override
         public int columns() {
             return dimensions.getColumns();
