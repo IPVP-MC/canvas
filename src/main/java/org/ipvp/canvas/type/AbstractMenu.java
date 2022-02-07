@@ -31,7 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.ipvp.canvas.ArrayIterator;
+import org.ipvp.canvas.helpers.ArrayIterator;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.slot.DefaultSlot;
 import org.ipvp.canvas.slot.Slot;

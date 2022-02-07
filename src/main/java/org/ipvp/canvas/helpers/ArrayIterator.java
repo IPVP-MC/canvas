@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-package org.ipvp.canvas;
+package org.ipvp.canvas.helpers;
 
 import java.util.Iterator;
 
