@@ -42,8 +42,8 @@ import org.ipvp.canvas.slot.Slot;
  */
 public abstract class AbstractMenu implements Menu  {
 
-    private Menu parent;
-    private boolean redraw;
+    private final Menu parent;
+    private final boolean redraw;
     private DefaultSlot[] slots;
     private CloseHandler handler;
     private CursorDropHandler cursorDropHandler;
@@ -78,7 +78,7 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     /**
-     * Initial method called to fill the Slots of the menu
+     * Initial method called to fill the slots with the menu
      */
     protected void generateSlots() {
         this.slots = new DefaultSlot[getDimensions().getArea()];
@@ -99,10 +99,10 @@ public abstract class AbstractMenu implements Menu  {
 
     @Override
     public void open(Player viewer) {
-        InventoryHolder currentInventory =
-                viewer.getOpenInventory().getTopInventory().getHolder();
+        InventoryHolder currentInventory = viewer.getOpenInventory().getTopInventory().getHolder();
+        MenuHolder holder;
         if (currentInventory instanceof MenuHolder) {
-            MenuHolder holder = (MenuHolder) currentInventory;
+            holder = (MenuHolder) currentInventory;
             Menu open = holder.getMenu();
 
             if (open == this) {
@@ -123,16 +123,15 @@ public abstract class AbstractMenu implements Menu  {
 
             updateInventoryContents(viewer, inventory);
             holder.setMenu(this);
-            holders.add(holder);
         } else {
             // Create new MenuHolder for the player
-            MenuHolder holder = new MenuHolder(viewer, this);
+            holder = new MenuHolder(viewer, this);
             Inventory inventory = createInventory(holder);
             updateInventoryContents(viewer, inventory);
             holder.setInventory(inventory);
             viewer.openInventory(inventory);
-            holders.add(holder);
         }
+        holders.add(holder);
     }
 
     private Inventory createInventory(InventoryHolder holder) {
@@ -235,6 +234,21 @@ public abstract class AbstractMenu implements Menu  {
     public void clear(int index) {
         Slot slot = getSlot(index);
         slot.setItem(null);
+    }
+
+    @Override
+    public void copyMenu(Menu target) {
+        if(!getClass().isInstance(target) || !target.getDimensions().equals(getDimensions())) {
+            throw new IllegalArgumentException("Illegal clone operation. Source menu type has a different schema then the target menu");
+        }
+
+        for(int i=0; i<slots.length; i++) {
+            slots[i].copySlot(target.getSlot(i));
+        }
+
+        target.getCursorDropHandler().ifPresent( h -> cursorDropHandler = h);
+        target.getCloseHandler().ifPresent( h -> handler = h);
+
     }
 
     @Override
