@@ -147,4 +147,10 @@ public class DefaultSlot implements Slot {
             setClickOptions(settings.getClickOptions());
         }
     }
+
+    @Override
+    public void copySlot(Slot slot) {
+        setSettings(slot.getSettings());
+    }
+
 }
