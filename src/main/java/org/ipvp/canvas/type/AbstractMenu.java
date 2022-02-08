@@ -88,6 +88,11 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     @Override
+    public String getInventoryTitle() {
+        return inventoryTitle;
+    }
+
+    @Override
     public Optional<Menu> getParent() {
         return Optional.ofNullable(parent);
     }
@@ -167,6 +172,12 @@ public abstract class AbstractMenu implements Menu  {
     @Override
     public void close(Player viewer) {
         closedByPlayer(viewer, true);
+        viewer.closeInventory();
+    }
+
+    @Override
+    public void closeSilently(Player viewer) {
+        closedByPlayer(viewer, false);
         viewer.closeInventory();
     }
 
