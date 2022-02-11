@@ -23,24 +23,28 @@
 
 package org.ipvp.canvas.type;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.ipvp.canvas.helpers.ArrayIterator;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.ipvp.canvas.InventoryUpdate;
 import org.ipvp.canvas.Menu;
+import org.ipvp.canvas.helpers.ArrayIterator;
 import org.ipvp.canvas.slot.DefaultSlot;
 import org.ipvp.canvas.slot.Slot;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * An abstract class that provides a skeletal implementation of the Menu 
  * interface.
  */
 public abstract class AbstractMenu implements Menu  {
+
+    private static final JavaPlugin plugin = JavaPlugin.getProvidingPlugin(AbstractMenu.class);
 
     private final Menu parent;
     private final boolean redraw;
@@ -119,6 +123,7 @@ public abstract class AbstractMenu implements Menu  {
             if (isRedraw() && open.getDimensions().equals(getDimensions())) {
                 inventory = holder.getInventory();
                 ((AbstractMenu) open).closedByPlayer(viewer, false);
+                InventoryUpdate.updateInventory(plugin, viewer, inventoryTitle);
             } else {
                 open.close(viewer);
                 inventory = createInventory(holder);
