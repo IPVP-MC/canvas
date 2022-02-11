@@ -21,54 +21,69 @@
  * SOFTWARE.
  */
 
-package org.ipvp.canvas.type;
+package org.ipvp.canvas;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.helpers.CancellableTimerTask;
+import org.ipvp.canvas.helpers.UnmodifiableCollections;
 
+import java.util.Collection;
+import java.util.Optional;
+
+@SuppressWarnings("unused")
 public class AnimatedMenu<K extends Menu> {
 
     private static final Plugin plugin = JavaPlugin.getProvidingPlugin(AnimatedMenu.class);
 
-    private final AbstractMenu.Builder<?> builder;
+    private Menu parent;
+
+    private final Menu.Builder<?> builder;
     private final double updateInterval;
     private final boolean loop;
 
     private int index = -1;
     private final Menu[] frames;
 
-    public AnimatedMenu(AbstractMenu.Builder<?> builder, int frames, double updateInterval, boolean loop) {
+    public AnimatedMenu(Menu.Builder<?> builder, int frames, double updateInterval, boolean loop) {
         this.frames = new Menu[frames];
         this.updateInterval = updateInterval;
         this.loop = loop;
-
-        builder.redraw(true);
-        this.builder = builder;
+        this.builder = builder.redraw(true);
     }
 
+    /**
+     * Change the next frame's title
+     * <br><br>
+     * This behaviour should be used with caution because as soon as this frame is loaded it
+     * is going to reset the pointer location of the user
+     */
     public K getNextFrame() {
         K menu = (K) builder.build();
-        addFrame(menu);
+
+        if(index > 0) {
+            menu.copyMenu(frames[index]);
+        }
+
+        setNextFrame(menu);
         return menu;
     }
+
+    /**
+     * The title is going to change only on the player-side
+     */
     public K getNextFrame(String title) {
-        String oldTitle = builder.getTitle();
         builder.title(title);
         K menu = getNextFrame();
-        builder.title(oldTitle);
         return menu;
     }
-
-    public void addFrame(K frame) {
-        index += 1;
-
-        if(index == frames.length) {
+    public void setNextFrame(K frame) {
+        if(index+1 == frames.length) {
             throw new IllegalStateException("All the variables frames are already been used");
         }
 
+        index += 1;
         frames[index] = frame;
     }
 
@@ -77,27 +92,14 @@ public class AnimatedMenu<K extends Menu> {
             return;
         }
 
-        if(loop) {
-            openLoop(player);
-        } else {
-            openOnce(player);
-        }
-    }
-    private void openLoop(Player player) {
         new CancellableTimerTask(index) {
+            private int lastIndex = 0;
+
             @Override
             protected void onCycle() {
-                if(cycles == -1) {
-                    if(frames[totalCycles].isOpen(player)) {
-                        cycles = 0;
-                    } else {
-                        task.cancel();
-                        return;
-                    }
-                }
-
-                if(cycles == 0 || frames[cycles-1].isOpen(player)) {
+                if((cycles == 0 && lastIndex == 0) || frames[lastIndex].isOpen(player)) {
                     frames[cycles].open(player);
+                    lastIndex = cycles;
                 } else {
                     task.cancel();
                 }
@@ -106,21 +108,65 @@ public class AnimatedMenu<K extends Menu> {
             @Override
             protected void onLastCycle() {
                 onCycle();
-                cycles = -2;
-            }
-        }.start(plugin, 0, (long) updateInterval);
-    }
-    private void openOnce(Player player) {
-        new CancellableTimerTask(index) {
-            @Override
-            protected void onCycle() {
-                if(cycles == 0 || frames[cycles-1].isOpen(player)) {
-                    frames[cycles].open(player);
+                if(loop) {
+                    resetLoop();
                 } else {
                     task.cancel();
                 }
             }
+            private void resetLoop() {
+                cycles = -1;
+            }
+
         }.start(plugin, 0, (long) updateInterval);
+    }
+    public boolean isOpen(Player viewer) {
+        for (Menu frame : frames) {
+            if(frame.isOpen(viewer)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void close() {
+        for(Menu frame : frames) {
+            frame.close();
+        }
+    }
+    public void close(Player viewer) throws IllegalStateException {
+        for(Menu frame : frames) {
+            frame.close(viewer);
+        }
+    }
+
+    public Collection<Player> getViewers() {
+        Collection<Player>[] viewers = new Collection[frames.length];
+        for(int i=0; i<frames.length; i++) {
+            viewers[i] = frames[i].getViewers();
+        }
+
+        return new UnmodifiableCollections<>(viewers);
+    }
+
+    public void update() {
+        for (Menu frame : frames) {
+            frame.update();
+        }
+    }
+    public void update(Player viewer) {
+        for(Menu frame : frames) {
+            try {
+                frame.update(viewer);
+            } catch (IllegalStateException ignored) {}
+        }
+    }
+
+    public Optional<Menu> getParent() {
+        return Optional.ofNullable(parent);
+    }
+    public void setParent(Menu parent) {
+        this.parent = parent;
     }
 
 }
