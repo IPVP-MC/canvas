@@ -149,6 +149,13 @@ public interface Slot {
     void setSettings(SlotSettings settings);
 
     /**
+     * Copy the data and settings from the targeted slot
+     *
+     * @param target The slot where this method will retrieve the data to copy
+     */
+    void copySlot(Slot target);
+
+    /**
      * A Slots click handler is a user defined function or policy that occurs when a
      * Player clicks on a slot.
      * <p>

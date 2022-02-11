@@ -111,6 +111,14 @@ public interface Menu extends Iterable<Slot> {
     void close(Player viewer) throws IllegalStateException;
 
     /**
+     * Closes the Menu for a viewing Player without invoking the close handler
+     *
+     * @param viewer The player who currently is viewing this Menu
+     * @throws IllegalStateException If the Player is not viewing the Menu
+     */
+    void closeSilently(Player viewer);
+
+    /**
      * Re-renders the menu for all viewers.
      *
      * @see #update(Player)
@@ -162,6 +170,15 @@ public interface Menu extends Iterable<Slot> {
      * @param index The index number to clear
      */
     void clear(int index);
+
+    /**
+     * Copy all the slots and all the settings from the targeted menu
+     *
+     * @param target The menu where this method will retrieve the data to copy
+     */
+    void copyMenu(Menu target);
+
+    String getInventoryTitle();
 
     /**
      * Returns the dimensions of the Menu
