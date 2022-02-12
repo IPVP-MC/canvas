@@ -21,7 +21,7 @@
  * SOFTWARE.
  */
 
-package org.ipvp.canvas;
+package org.ipvp.canvas.helpers;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -44,7 +44,7 @@ import java.util.Arrays;
  */
 
 @SuppressWarnings("ConstantConditions")
-public final class InventoryUpdate {
+public final class InventoryUpdater {
 
     // Classes.
     private final static Class<?> CRAFT_PLAYER_CLASS;

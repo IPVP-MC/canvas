@@ -29,7 +29,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.ipvp.canvas.InventoryUpdate;
+import org.ipvp.canvas.helpers.InventoryUpdater;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.helpers.ArrayIterator;
 import org.ipvp.canvas.slot.DefaultSlot;
@@ -123,7 +123,7 @@ public abstract class AbstractMenu implements Menu  {
             if (isRedraw() && open.getDimensions().equals(getDimensions())) {
                 inventory = holder.getInventory();
                 ((AbstractMenu) open).closedByPlayer(viewer, false);
-                InventoryUpdate.updateInventory(plugin, viewer, inventoryTitle);
+                InventoryUpdater.updateInventory(plugin, viewer, inventoryTitle);
             } else {
                 open.close(viewer);
                 inventory = createInventory(holder);
