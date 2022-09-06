@@ -123,7 +123,7 @@ configured to set the proper previous and next page icons, and any necessary fun
 In the basic example below, we create a simple menu displaying various static items.
 ```java
 Menu.Builder pageTemplate = ChestMenu.builder(3).title("Items").redraw(true);
-Mask2D itemSlots = Mask2D.builder(pageTemplate.getDimensions())
+Mask itemSlots = BinaryMask.builder(pageTemplate.getDimensions())
         .pattern("011111110").build();
 List<Menu> pages = PaginatedMenuBuilder.builder(pageTemplate)
         .slots(itemSlots)
