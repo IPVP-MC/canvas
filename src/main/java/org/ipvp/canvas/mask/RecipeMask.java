@@ -94,8 +94,10 @@ public class RecipeMask implements Mask {
     public void apply(Menu menu) {
         mask.forEach((slot, character) -> {
             SlotSettings settings = this.settings.get(character);
-            Slot affected = menu.getSlot(slot);
-            affected.setSettings(settings);
+            if (settings != null) {
+                Slot affected = menu.getSlot(slot);
+                affected.setSettings(settings);
+            }
         });
     }
 
