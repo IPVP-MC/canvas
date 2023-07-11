@@ -25,6 +25,7 @@ package org.ipvp.canvas;
 
 import java.util.Objects;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
@@ -139,6 +140,21 @@ public class ClickInformation {
     }
 
     /**
+     * Returns the item that is being removed from the clicked slot
+     *
+     * @param viewer the player
+     * @return the item that is being removed from the clicked slot
+     * @throws IllegalStateException If {@link #isTakingItem()} is false
+     */
+    public ItemStack getTakingItem(Player viewer) {
+        if (!isTakingItem()) {
+            throw new IllegalStateException("Not adding item");
+        } else {
+            return clickedSlot.getRawItem(viewer);
+        }
+    }
+
+    /**
      * @return the amount of items being added or removed.
      */
     public int getItemAmount() {
@@ -150,19 +166,44 @@ public class ClickInformation {
                 int limit = current == null ? 64 : current.getType().getMaxStackSize();
                 return Math.min(limit, getAddingItem().getAmount());
             case PLACE_ONE:
-            case PICKUP_ONE:
             case DROP_ONE_SLOT:
                 return 1;
-            case PICKUP_HALF:
-                return (int) Math.ceil(getClickedSlot().getItem().getAmount() / 2D);
-            case PICKUP_ALL:
             case DROP_ALL_SLOT:
                 return getClickedSlot().getItem().getAmount();
             case MOVE_TO_OTHER_INVENTORY:
-                return isAddingItem() ? getAddingItem().getAmount()
-                        : getClickedSlot().getItem().getAmount();
-            case PICKUP_SOME: // Don't know how this is caused
+                if (isAddingItem()) {
+                    return getAddingItem().getAmount();
+                }
+            case PICKUP_SOME:
+            case PICKUP_ONE:
+            case PICKUP_HALF:
+            case PICKUP_ALL:
+                throw new IllegalStateException("This no longer works, use getAmountTaken instead");
             case SWAP_WITH_CURSOR:
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * Get the amount of an item being taken
+     *
+     * @param viewer the viewer of the inventory
+     * @return the amount of the item being taken
+     */
+    public int getAmountTaken(Player viewer) {
+        switch (getAction()) {
+            case PICKUP_ONE:
+                return 1;
+            case PICKUP_HALF:
+                return (int) Math.ceil(getTakingItem(viewer).getAmount() / 2D);
+            case PICKUP_ALL:
+                return getTakingItem(viewer).getAmount();
+            case MOVE_TO_OTHER_INVENTORY:
+                if (isTakingItem()) {
+                    return getTakingItem(viewer).getAmount();
+                }
+            case PICKUP_SOME: // Unsure how this shows up
             default:
                 throw new UnsupportedOperationException();
         }
