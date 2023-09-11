@@ -25,6 +25,7 @@ package org.ipvp.canvas;
 
 import java.util.Objects;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
@@ -146,7 +147,7 @@ public class ClickInformation {
             case PLACE_ALL:
                 return getAddingItem().getAmount();
             case PLACE_SOME:
-                ItemStack current = getClickedSlot().getItem();
+                ItemStack current = getRawItem();
                 int limit = current == null ? 64 : current.getType().getMaxStackSize();
                 return Math.min(limit, getAddingItem().getAmount());
             case PLACE_ONE:
@@ -154,18 +155,22 @@ public class ClickInformation {
             case DROP_ONE_SLOT:
                 return 1;
             case PICKUP_HALF:
-                return (int) Math.ceil(getClickedSlot().getItem().getAmount() / 2D);
+                return (int) Math.ceil(getRawItem().getAmount() / 2D);
             case PICKUP_ALL:
             case DROP_ALL_SLOT:
-                return getClickedSlot().getItem().getAmount();
+                return getRawItem().getAmount();
             case MOVE_TO_OTHER_INVENTORY:
                 return isAddingItem() ? getAddingItem().getAmount()
-                        : getClickedSlot().getItem().getAmount();
+                        : getRawItem().getAmount();
             case PICKUP_SOME: // Don't know how this is caused
             case SWAP_WITH_CURSOR:
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    private ItemStack getRawItem() {
+        return getClickedSlot().getRawItem((Player) handle.getWhoClicked());
     }
 
     /**
