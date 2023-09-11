@@ -1,0 +1,7 @@
+name: CanvasExamplePlugin
+main: com.sainttx.canvas.test.CanvasExamplePlugin
+version: 1.0.0
+
+commands:
+  canvas:
+    description: Open an inventory created with canvas
