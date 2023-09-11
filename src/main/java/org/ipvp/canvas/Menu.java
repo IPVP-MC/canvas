@@ -24,16 +24,18 @@
 package org.ipvp.canvas;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryAction;
+import org.ipvp.canvas.mask.Mask;
 import org.ipvp.canvas.slot.Slot;
 
 /**
- * A menu represents an interactive interface for Players backed by instances of 
- * Inventories. 
+ * A menu represents an interactive interface for Players backed by instances of
+ * Inventories.
  * <p>
  * Menu interaction will not function properly unless an instance of {@link MenuFunctionListener}
  * is properly registered with the Bukkit event scheduler.
@@ -49,7 +51,7 @@ public interface Menu extends Iterable<Slot> {
 
     /**
      * Returns the fallback Menu for when this menu is closed
-     * 
+     *
      * @return The parent menu
      */
     Optional<Menu> getParent();
@@ -130,6 +132,22 @@ public interface Menu extends Iterable<Slot> {
     void update(Player viewer) throws IllegalStateException;
 
     /**
+     * Returns all slots that belong to this menu.
+     *
+     * @return the menus slots
+     */
+    List<Slot> getSlots();
+
+    /**
+     * Returns all slots in this menu that are affected by the
+     * mask.
+     *
+     * @param mask mask to get slots of
+     * @return menu slots affected by mask
+     */
+    List<Slot> getSlots(Mask mask);
+
+    /**
      * Returns the Slot found at the given index of the Menu.
      *
      * @param index The index of the Slot
@@ -165,7 +183,7 @@ public interface Menu extends Iterable<Slot> {
 
     /**
      * Returns the dimensions of the Menu
-     * 
+     *
      * @return The menus row and column count
      */
     Dimension getDimensions();
@@ -207,7 +225,7 @@ public interface Menu extends Iterable<Slot> {
     interface CloseHandler {
 
         /**
-         * Called when a Player closes a menu, be it by navigating to a different 
+         * Called when a Player closes a menu, be it by navigating to a different
          * inventory screen, or logging off.
          *
          * @param player The player that closed the menu
@@ -282,13 +300,13 @@ public interface Menu extends Iterable<Slot> {
     }
 
     /**
-     * Represents the dimensions of a Menu 
+     * Represents the dimensions of a Menu
      */
     class Dimension {
-        
+
         private final int rows;
         private final int columns;
-        
+
         public Dimension(int rows, int columns) {
             this.rows = rows;
             this.columns = columns;
@@ -296,7 +314,7 @@ public interface Menu extends Iterable<Slot> {
 
         /**
          * Returns the number of rows in the Menu
-         * 
+         *
          * @return The row count
          */
         public int getRows() {
@@ -305,7 +323,7 @@ public interface Menu extends Iterable<Slot> {
 
         /**
          * Returns the number of columns in the Menu
-         * 
+         *
          * @return The column count
          */
         public int getColumns() {

@@ -33,6 +33,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.ipvp.canvas.ArrayIterator;
 import org.ipvp.canvas.Menu;
+import org.ipvp.canvas.mask.Mask;
 import org.ipvp.canvas.slot.DefaultSlot;
 import org.ipvp.canvas.slot.Slot;
 
@@ -204,6 +205,18 @@ public abstract class AbstractMenu implements Menu  {
 
     public Set<MenuHolder> getHolders() {
         return Collections.unmodifiableSet(holders);
+    }
+
+    @Override
+    public List<Slot> getSlots() {
+        return Arrays.asList(slots);
+    }
+
+    @Override
+    public List<Slot> getSlots(Mask mask) {
+        List<Slot> slots = new ArrayList<>();
+        mask.getSlots().forEach(idx -> slots.add(getSlot(idx)));
+        return slots;
     }
 
     @Override
