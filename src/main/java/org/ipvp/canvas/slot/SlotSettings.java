@@ -23,6 +23,7 @@
 
 package org.ipvp.canvas.slot;
 
+import java.util.function.Supplier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.template.ItemStackTemplate;
@@ -107,6 +108,13 @@ public class SlotSettings {
          */
         public Builder item(ItemStack itemStack) {
             return itemTemplate(itemStack == null ? null : new StaticItemTemplate(itemStack));
+        }
+
+        /**
+         * @see #item(ItemStack)
+         */
+        public Builder item(Supplier<ItemStack> itemStack) {
+            return item(itemStack.get());
         }
 
         /**

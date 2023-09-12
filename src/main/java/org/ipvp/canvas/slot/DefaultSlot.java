@@ -26,6 +26,7 @@ package org.ipvp.canvas.slot;
 import java.util.Objects;
 import java.util.Optional;
 
+import java.util.function.Supplier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -93,6 +94,11 @@ public class DefaultSlot implements Slot {
     @Override
     public void setItem(ItemStack item) {
         setItemTemplate(new StaticItemTemplate(item));
+    }
+
+    @Override
+    public void setItem(Supplier<ItemStack> item) {
+        setItem(item.get());
     }
 
     @Override

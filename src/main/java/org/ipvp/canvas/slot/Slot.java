@@ -23,6 +23,7 @@
 
 package org.ipvp.canvas.slot;
 
+import java.util.function.Supplier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.ClickInformation;
@@ -84,6 +85,14 @@ public interface Slot {
      * @param item The new item in the slot
      */
     void setItem(ItemStack item);
+
+    /**
+     * Sets a static item template for the slot using the item provided
+     * by the supplier.
+     *
+     * @param item item supplier
+     */
+    void setItem(Supplier<ItemStack> item);
 
     /**
      * Sets the item template to render in the slot.

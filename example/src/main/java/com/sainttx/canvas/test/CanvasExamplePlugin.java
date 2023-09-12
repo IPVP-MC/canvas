@@ -53,14 +53,15 @@ public class CanvasExamplePlugin extends JavaPlugin implements Listener {
         Menu baseMenu = getBaseMenu();
 
         // Add an item to move to the movable items menu
-        ItemStack nextMenuItem = new ItemStack(Material.ARROW);
-        ItemMeta nextMenuMeta = nextMenuItem.getItemMeta();
-        nextMenuMeta.setDisplayName("Next Menu");
-        nextMenuMeta.setLore(Arrays.asList("Click me to go to a menu where", "you can move items around"));
-        nextMenuItem.setItemMeta(nextMenuMeta);
-
         Slot nextMenuSlot = baseMenu.getSlot(2, 8);
-        nextMenuSlot.setItem(nextMenuItem);
+        nextMenuSlot.setItem(() -> {
+            ItemStack nextMenuItem = new ItemStack(Material.ARROW);
+            ItemMeta nextMenuMeta = nextMenuItem.getItemMeta();
+            nextMenuMeta.setDisplayName("Next Menu");
+            nextMenuMeta.setLore(Arrays.asList("Click me to go to a menu where", "you can move items around"));
+            nextMenuItem.setItemMeta(nextMenuMeta);
+            return nextMenuItem;
+        });
         nextMenuSlot.setClickHandler((p, m) -> getMovableItemsMenu().open(p));
 
         baseMenu.open((Player) sender);

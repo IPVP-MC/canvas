@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.ArrayIterator;
 import org.ipvp.canvas.Menu;
 import org.ipvp.canvas.mask.Mask;
@@ -240,14 +241,14 @@ public abstract class AbstractMenu implements Menu  {
     @Override
     public void clear() {
         for (Slot slot : slots) {
-            slot.setItem(null);
+            slot.setItem((ItemStack) null);
         }
     }
 
     @Override
     public void clear(int index) {
         Slot slot = getSlot(index);
-        slot.setItem(null);
+        slot.setItem((ItemStack) null);
     }
 
     @Override
