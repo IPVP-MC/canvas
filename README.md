@@ -20,6 +20,7 @@ canvas is integrated into plugins through the use of Maven.
 * [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 * [Maven 3](http://maven.apache.org/download.html)
 * [Git](https://git-scm.com/downloads)
+* Spigot 1.8.8 or newer
 
 Then use the following command to install canvas to your local maven repository
 ```
