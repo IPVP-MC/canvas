@@ -119,6 +119,25 @@ public class ClickInformation {
     }
 
     /**
+     * @return Whether the Player is adding an item into the slot
+     */
+    public boolean isAddingItem() {
+        switch (getAction()) {
+            case PLACE_ALL:
+            case PLACE_SOME:
+            case PLACE_ONE:
+            case SWAP_WITH_CURSOR:
+            case HOTBAR_SWAP:
+            case HOTBAR_MOVE_AND_READD: // functions the same as HOTBAR_SWAP when click is in top inventory
+                return true;
+            case MOVE_TO_OTHER_INVENTORY:
+                return handle.getView().getBottomInventory() == clicked;
+            default:
+                return false;
+        }
+    }
+
+    /**
      * Returns the item that is being added into the clicked slot
      *
      * @return Item being added
@@ -134,14 +153,118 @@ public class ClickInformation {
            return event.getNewItems().get(clickedSlot.getIndex());
        } else {
            InventoryClickEvent clickEvent = ((InventoryClickEvent) handle);
-           return clickEvent.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY
-                   ? clickEvent.getCurrentItem() : clickEvent.getCursor();
+           switch (clickEvent.getAction()) {
+               case HOTBAR_SWAP:
+               case HOTBAR_MOVE_AND_READD:
+                   int hotbarSlot = clickEvent.getHotbarButton();
+                   return clickEvent.getView().getBottomInventory().getItem(hotbarSlot);
+               case MOVE_TO_OTHER_INVENTORY:
+                   return clickEvent.getCurrentItem();
+               default:
+                   return clickEvent.getCursor();
+           }
        }
     }
 
     /**
-     * @return the amount of items being added or removed.
+     * Returns the amount of items being added into the slot.
+     *
+     * @return added item amount
      */
+    public int getAddingItemAmount() {
+        if (!isAddingItem()) {
+            return -1;
+        }
+        switch (getAction()) {
+            case PLACE_ONE:
+                return 1;
+            case PLACE_SOME:
+                ItemStack current = getRawItem();
+                int limit = current == null ? 64 : current.getType().getMaxStackSize();
+                return Math.min(limit, getAddingItem().getAmount());
+            case PLACE_ALL:
+            case MOVE_TO_OTHER_INVENTORY:
+            case SWAP_WITH_CURSOR:
+            case HOTBAR_SWAP:
+            case HOTBAR_MOVE_AND_READD:
+                return getAddingItem().getAmount();
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * @return Whether the Player is removing an item from the slot
+     */
+    public boolean isTakingItem() {
+        switch (getAction()) {
+            case PICKUP_ALL:
+            case PICKUP_HALF:
+            case PICKUP_ONE:
+            case PICKUP_SOME:
+            case SWAP_WITH_CURSOR:
+                return true;
+            case MOVE_TO_OTHER_INVENTORY:
+            case HOTBAR_MOVE_AND_READD:
+            case HOTBAR_SWAP:
+                return handle.getView().getTopInventory() == clicked;
+            default:
+                return isDroppingItem();
+        }
+    }
+
+    /**
+     * Returns the item that is being added into the clicked slot
+     *
+     * @return Item being added
+     * @throws IllegalStateException If {@link #isAddingItem()} is false
+     */
+    public ItemStack getTakingItem() {
+        if (!isTakingItem()) {
+            throw new IllegalStateException("An item is not being taken");
+        } else {
+            InventoryClickEvent clickEvent = ((InventoryClickEvent) handle);
+            return clickEvent.getCurrentItem();
+        }
+    }
+
+    /**
+     * Returns the amount of items being added into the slot.
+     *
+     * @return added item amount
+     */
+    public int getTakingItemAmount() {
+        if (!isTakingItem()) {
+            return -1;
+        }
+        switch (getAction()) {
+            case PICKUP_ONE:
+            case DROP_ONE_SLOT:
+                return 1;
+            case PICKUP_HALF:
+                return (int) Math.ceil(getRawItem().getAmount() / 2D);
+            case PICKUP_SOME:
+                // This case seems to occur when a stack being picked up exceeds the max size,
+                // and so only the max stack is placed onto the cursor.
+                // ref: https://www.spigotmc.org/threads/what-is-inventoryaction-pickup_some.485557/#post-4064128
+                return getRawItem().getMaxStackSize();
+            case PICKUP_ALL:
+            case DROP_ALL_SLOT:
+            case MOVE_TO_OTHER_INVENTORY:
+            case SWAP_WITH_CURSOR:
+            case HOTBAR_SWAP:
+            case HOTBAR_MOVE_AND_READD:
+                return getRawItem().getAmount();
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * @return the amount of items being added or removed.
+     * @deprecated superseded by {@link #getAddingItemAmount()} and {@link #getTakingItemAmount()}
+     */
+    @Deprecated
     public int getItemAmount() {
         switch (getAction()) {
             case PLACE_ALL:
@@ -171,44 +294,6 @@ public class ClickInformation {
 
     private ItemStack getRawItem() {
         return getClickedSlot().getRawItem((Player) handle.getWhoClicked());
-    }
-
-    /**
-     * @return Whether the Player is adding an item into the slot
-     */
-    public boolean isAddingItem() {
-        switch (getAction()) {
-            case PLACE_ALL:
-            case PLACE_SOME:
-            case PLACE_ONE:
-            case SWAP_WITH_CURSOR:
-            case HOTBAR_SWAP:
-                return true;
-            case MOVE_TO_OTHER_INVENTORY:
-                return handle.getView().getBottomInventory() == clicked;
-            default:
-                return false;
-        }
-    }
-
-    /**
-     * @return Whether the Player is removing an item from the slot
-     */
-    public boolean isTakingItem() {
-        switch (getAction()) {
-            case PICKUP_ALL:
-            case PICKUP_HALF:
-            case PICKUP_ONE:
-            case PICKUP_SOME:
-            case SWAP_WITH_CURSOR:
-                return true;
-            case MOVE_TO_OTHER_INVENTORY:
-            case HOTBAR_MOVE_AND_READD:
-            case HOTBAR_SWAP:
-                return handle.getView().getTopInventory() == clicked;
-            default:
-                return isDroppingItem();
-        }
     }
 
     /**
