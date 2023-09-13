@@ -55,7 +55,7 @@ public class CanvasExamplePlugin extends JavaPlugin implements Listener {
         // Add an item to move to the movable items menu
         Slot nextMenuSlot = baseMenu.getSlot(2, 8);
         nextMenuSlot.setItem(() -> {
-            ItemStack nextMenuItem = new ItemStack(Material.ARROW);
+            ItemStack nextMenuItem = new ItemStack(Material.REDSTONE);
             ItemMeta nextMenuMeta = nextMenuItem.getItemMeta();
             nextMenuMeta.setDisplayName("Next Menu");
             nextMenuMeta.setLore(Arrays.asList("Click me to go to a menu where", "you can move items around"));
@@ -106,19 +106,6 @@ public class CanvasExamplePlugin extends JavaPlugin implements Listener {
             return playerLevelItem;
         });
 
-        Slot debugSlot = menu.getSlot(2, 7);
-        debugSlot.setItemTemplate(p -> {
-            ItemStack playerLevelItem = new ItemStack(Material.REDSTONE);
-            ItemMeta levelMeta = playerLevelItem.getItemMeta();
-            levelMeta.setDisplayName("Debug Item");
-            levelMeta.setLore(Arrays.asList("Clicking and moving this item around will",
-                    "print debug output in the console"));
-            playerLevelItem.setItemMeta(levelMeta);
-            return playerLevelItem;
-        });
-        debugSlot.setClickOptions(ClickOptions.ALLOW_ALL);
-        debugSlot.setClickHandler(getDebugClickHandler());
-
         return menu;
     }
 
@@ -130,15 +117,16 @@ public class CanvasExamplePlugin extends JavaPlugin implements Listener {
             getServer().getLogger().info("- Inventory Action: " + click.getAction());
             getServer().getLogger().info("- Click Type: " + click.getClickType());
             getServer().getLogger().info("- Current Event Result: " + click.getResult());
-            if (click.isAddingItem() || click.isTakingItem()) {
-                getServer().getLogger().info("- Item Amount: " + click.getItemAmount());
-            }
-            getServer().getLogger().info("- isAddingItem: " + click.isAddingItem());
             if (click.isAddingItem()) {
-                ItemStack addingItem = click.getAddingItem();
-                getServer().getLogger().info("- Adding Item: " + addingItem.getType());
+                getServer().getLogger().info("- Adding Item:");
+                getServer().getLogger().info("  - Amount: " + click.getAddingItemAmount());
+                getServer().getLogger().info("  - Item: " + click.getAddingItem().getType());
             }
-            getServer().getLogger().info("- isTakingItem: " + click.isTakingItem());
+            if (click.isTakingItem()) {
+                getServer().getLogger().info("- Taking Item:");
+                getServer().getLogger().info("  - Amount: " + click.getTakingItemAmount());
+                getServer().getLogger().info("  - Item: " + click.getTakingItem().getType());
+            }
             getServer().getLogger().info("- isDroppingItem: " + click.isDroppingItem());
 
             ItemStack slotItem = slot.getItem(player);
@@ -170,11 +158,20 @@ public class CanvasExamplePlugin extends JavaPlugin implements Listener {
         Menu moveableItemsMenu = ChestMenu.builder(3)
                 .title("Move Items Around")
                 .build();
-        moveableItemsMenu.getSlot(0).setItem(new ItemStack(Material.STONE));
-        moveableItemsMenu.getSlot(1).setItem(new ItemStack(Material.STONE));
-        moveableItemsMenu.getSlot(2).setItem(new ItemStack(Material.STONE));
+
+        ItemStack debugItem = new ItemStack(Material.REDSTONE);
+        ItemMeta debugItemMeta = debugItem.getItemMeta();
+        debugItemMeta.setDisplayName("Debug Item");
+        debugItemMeta.setLore(Arrays.asList("Click and move items around in this",
+                "inventory to print debug output in", "the console"));
+        debugItem.setItemMeta(debugItemMeta);
+
+        moveableItemsMenu.getSlot(0).setItem(new ItemStack(debugItem));
+        moveableItemsMenu.getSlot(1).setItem(new ItemStack(debugItem));
+        moveableItemsMenu.getSlot(2).setItem(new ItemStack(debugItem));
         for (Slot slot : moveableItemsMenu) {
             slot.setClickOptions(ClickOptions.ALLOW_ALL);
+            slot.setClickHandler(getDebugClickHandler());
         }
         moveableItemsMenu.setCursorDropHandler((player, click) -> {
             getServer().getLogger().info("Player " + player.getName() + " dropped an item with type: "
