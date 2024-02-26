@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.ipvp.canvas.template.ItemStackTemplate;
 import org.ipvp.canvas.template.StaticItemTemplate;
@@ -112,12 +113,11 @@ public class DefaultSlot implements Slot {
 
     @Override
     public ItemStack getRawItem(Player viewer) {
-        Optional<MenuHolder> menu = handle.getHolders().stream()
-                .filter(v -> v.getViewer().equals(viewer)).findFirst();
-        if (!menu.isPresent()) {
+        if (!handle.isOpen(viewer)) {
             throw new IllegalStateException("Player not viewing parent menu");
         }
-        return menu.get().getInventory().getItem(getIndex());
+        MenuHolder menu = (MenuHolder) viewer.getOpenInventory().getTopInventory().getHolder();
+        return menu.getInventory().getItem(getIndex());
     }
 
     @Override

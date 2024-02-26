@@ -159,7 +159,8 @@ public abstract class AbstractMenu implements Menu  {
     public boolean isOpen(Player viewer) {
         InventoryHolder currentInventory =
                 viewer.getOpenInventory().getTopInventory().getHolder();
-        return currentInventory instanceof MenuHolder && holders.contains(currentInventory);
+        return currentInventory instanceof MenuHolder &&
+                ((MenuHolder) currentInventory).getMenu() == this;
     }
 
     @Override
@@ -189,15 +190,12 @@ public abstract class AbstractMenu implements Menu  {
     }
 
     public void closedByPlayer(Player viewer, boolean triggerCloseHandler) {
-        InventoryHolder currentInventory =
-                viewer.getOpenInventory().getTopInventory().getHolder();
-
-        if (!(currentInventory instanceof MenuHolder)
-                || !holders.contains(currentInventory)) {
+        if (!isOpen(viewer)) {
             return;
         }
 
-        MenuHolder holder = (MenuHolder) currentInventory;
+        MenuHolder holder = (MenuHolder)
+                viewer.getOpenInventory().getTopInventory().getHolder();
         holders.remove(holder);
         if (triggerCloseHandler) {
             getCloseHandler().ifPresent(h -> h.close(viewer, this));
